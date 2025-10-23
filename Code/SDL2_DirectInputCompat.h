@@ -108,6 +108,31 @@ typedef struct DIPROPRANGE {
     LONG lMax;
 } DIPROPRANGE, *LPDIPROPRANGE;
 
+// Const pointer typedef for property header
+typedef const DIPROPHEADER* LPCDIPROPHEADER;
+
+// Device object instance structure (forward declaration for callback)
+typedef struct DIDEVICEOBJECTINSTANCE {
+    DWORD dwSize;
+    GUID guidType;
+    DWORD dwOfs;
+    DWORD dwType;
+    DWORD dwFlags;
+    TCHAR tszName[260];
+    DWORD dwFFMaxForce;
+    DWORD dwFFForceResolution;
+    WORD wCollectionNumber;
+    WORD wDesignatorIndex;
+    WORD wUsagePage;
+    WORD wUsage;
+    DWORD dwDimension;
+    WORD wExponent;
+    WORD wReportId;
+} DIDEVICEOBJECTINSTANCE, *LPDIDEVICEOBJECTINSTANCE;
+
+// Callback function pointer for EnumObjects
+typedef BOOL (CALLBACK *LPDIENUMDEVICEOBJECTSCALLBACK)(LPDIDEVICEOBJECTINSTANCE lpddoi, LPVOID pvRef);
+
 // ============================================================================
 // DirectInput Keyboard Scan Codes (DIK_*)
 // Map these to SDL_Scancode
