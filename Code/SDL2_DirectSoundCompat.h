@@ -34,7 +34,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <windows.h>
-#include <unknwn.h>  // For IUnknown
+#include <mmsystem.h>  // For WAVEFORMATEX, LPWAVEFORMATEX
+#include <unknwn.h>    // For IUnknown
 #include <vector>
 #include <unordered_map>
 
