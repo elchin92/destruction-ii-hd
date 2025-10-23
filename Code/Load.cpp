@@ -77,8 +77,9 @@ int Load::GetData(int which){
 
 	int err=FALSE;
 	// Test load of game&gamekeeper
-	for(SaveableClass *sc=TheSaveableClasses; sc ; sc=sc->nextSaveableClass){
-		File.read(&KeyLength, 1);
+	SaveableClass *sc;
+	for(sc=TheSaveableClasses; sc ; sc=sc->nextSaveableClass){
+		File.read(reinterpret_cast<char*>(&KeyLength), 1);
 		File.read(tTopic,KeyLength);
 		tTopic[KeyLength]='\0';
 		DP2("KeyLength",KeyLength);
@@ -109,7 +110,7 @@ int Load::GetData(int which){
 
 	int loaded=0;
 	for(sc=TheSaveableClasses; sc ; sc=sc->nextSaveableClass){
-		File.read(&KeyLength, 1);
+		File.read(reinterpret_cast<char*>(&KeyLength), 1);
 		File.read(tTopic,KeyLength);
 		tTopic[KeyLength]='\0';
 		if(File.fail()){
