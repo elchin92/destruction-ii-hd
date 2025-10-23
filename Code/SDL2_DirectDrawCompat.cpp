@@ -11,6 +11,12 @@
 #include <SDL2/SDL_image.h>
 #include <algorithm>
 #include <cstring>
+#include <string>
+
+// DirectDraw error codes not defined in Win32 headers
+#ifndef DDERR_INVALIDPARAMS
+#define DDERR_INVALIDPARAMS E_INVALIDARG
+#endif
 
 // Global SDL2 renderer for convenience (set by SDL2DirectDraw)
 static SDL_Renderer* g_SDLRenderer = nullptr;

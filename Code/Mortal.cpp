@@ -361,7 +361,7 @@ void Mortal::SetPos(int x, int y){
 void Mortal::MaybeExplode(){
 	if(Explosions && ExpStart < TheGame->thisTickCount){
 
-		int Delay=800 - min(500,Explosions*Explosions*10);
+		int Delay=800 - std::min(500,Explosions*Explosions*10);
 		int Damage=80;
 		RegExpType rType=RET_MORTALEXPLOSIONSMALL;
 

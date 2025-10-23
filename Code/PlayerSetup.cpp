@@ -86,7 +86,8 @@ PlayerSetup::~PlayerSetup(){
 Player ** PlayerSetup::EraseAllPlayersAndCreateNew(int NewPlayers){
 
 
-	for(int d=0;d<16;d++){
+	int d; // C++20: declare outside loop for reuse
+	for(d=0;d<16;d++){
 		SAFE_DELETE(PlayerArray[d]);
 	}
 	Player * pPlayer=NULL;
@@ -304,7 +305,8 @@ int PlayerSetup::ErasePlayer(){
 
 	NumberOfPlayers--;
 	// Move down other players
-	for(int pl=PlayerPointer;pl<NumberOfPlayers;pl++){
+	int pl; // C++20: declare outside loop for use after loop
+	for(pl=PlayerPointer;pl<NumberOfPlayers;pl++){
 		PlayerArray[pl]=PlayerArray[pl+1];
 		PlayerArray[pl]->SetID(pl);
 	}

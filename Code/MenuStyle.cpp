@@ -206,8 +206,8 @@ void MenuStyle::CalculateMenuDimensions(int XPlay, int YPlay, int LockedCols, in
 		if(!UsingSisterStyle){
 			ItemToEdgeDistance[0]=XPlay/30;
 			ItemToEdgeDistance[1]=YPlay/70;
-			BorderThickness=min(XPlay, YPlay)/(45*Cols);
-			BorderRound=min(XPlay,YPlay)/25;
+			BorderThickness=std::min(XPlay, YPlay)/(45*Cols);
+			BorderRound=std::min(XPlay,YPlay)/25;
 		}
 		EndBorderToNextItemDistance=2*BorderThickness;
 	}

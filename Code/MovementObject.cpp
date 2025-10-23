@@ -198,7 +198,7 @@ void MovementObject::SaveSquareMP(){
 		else MaxMP[i]++;
 	}
 
-	int tMaxMP=min(MaxMP[0],MaxMP[1]);
+	int tMaxMP=std::min(MaxMP[0],MaxMP[1]);
 
 	if(tMaxMP>=1&&tMaxMP<=GetMP())
 		AddEvent(new NewSquareEvent(tMaxMP, Mover ));

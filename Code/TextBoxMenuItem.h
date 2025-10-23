@@ -20,8 +20,8 @@ private:
 	HFONT InputFont;
 public:
 
-	TextBoxMenuItem(MenuStyle * iTheMenuStyle, char * iistr);
-	TextBoxMenuItem(int x, int y, int w, int h, int fs, int fw, char * iistr);
+	TextBoxMenuItem(MenuStyle * iTheMenuStyle, const char * iistr); // C++20: const char*
+	TextBoxMenuItem(int x, int y, int w, int h, int fs, int fw, const char * iistr); // C++20: const char*
 	~TextBoxMenuItem();
 
 	void InternalBlit(int Selected);

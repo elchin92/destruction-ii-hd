@@ -16,11 +16,11 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-TextBoxMenuItem::TextBoxMenuItem(MenuStyle * iTheMenuStyle, char * iistr)
+TextBoxMenuItem::TextBoxMenuItem(MenuStyle * iTheMenuStyle, const char * iistr) // C++20: const char*
 {
 	ActiveMenuItem::Initialize();
 	TheMenuStyle=iTheMenuStyle;
-	istr=iistr;
+	istr=const_cast<char*>(iistr); // C++20: cast away const (legacy code)
 	chars=strlen(istr);
 	RegularStyle=TRUE;
 	InputBox=NULL;
@@ -29,10 +29,10 @@ TextBoxMenuItem::TextBoxMenuItem(MenuStyle * iTheMenuStyle, char * iistr)
 
 }
 
-TextBoxMenuItem::TextBoxMenuItem(int x, int y, int w, int h, int fs, int fw, char * iistr)
+TextBoxMenuItem::TextBoxMenuItem(int x, int y, int w, int h, int fs, int fw, const char * iistr) // C++20: const char*
 {
 	ActiveMenuItem::Initialize();
-	istr=iistr;
+	istr=const_cast<char*>(iistr); // C++20: cast away const (legacy code)
 	chars=strlen(istr);
 
 	lSelected=FALSE;

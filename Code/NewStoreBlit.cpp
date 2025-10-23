@@ -150,7 +150,8 @@ void NewStore::BlitLeaveStoreButton(int w){
 void NewStore::BlitMiscInfo(int w){
 	if(MiscBox->BlankAndPrepareBox(400*w)){
 
-		for(int i=0, ya=5 ;i<MISCITEMS;i++){
+		int ya=5; // C++20: declare outside loop for use after loop
+		for(int i=0 ;i<MISCITEMS;i++){
 			if(apl->GotItem(i)&&i!=MISC_XLIFE&&i!=MISC_SLOTDEPTH){
 				MiscBox->Print(5,ya,Information[4][i][0]);
 				ya+=12;
@@ -401,7 +402,7 @@ void NewStore::BlitAmmoInfo(InfoBox * Box){BlitRegularShopInfo(Box);}
 void NewStore::BlitMiscInfo(InfoBox * Box){BlitRegularShopInfo(Box);}
 void NewStore::BlitSpecialInfo(InfoBox * Box){BlitRegularShopInfo(Box);}
 void NewStore::BlitArmorInfo(InfoBox * Box){BlitRegularShopInfo(Box);}
-static char * NotName[2]={"Not ",""};
+static const char * NotName[2]={"Not ",""}; // C++20: string literals are const char*
 void NewStore::BlitWeaponInfo(InfoBox * Box){
 	Box->SetTemporaryInfoBoxTextFont(&ShopFont12b);
 
