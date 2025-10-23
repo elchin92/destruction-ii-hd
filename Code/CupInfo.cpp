@@ -69,7 +69,7 @@ void CupInfo::Blit(){
 		}
 		const int lw=47;
 		SelectObject(TheGame->hdc,rdPen);
-		for(i=0;i<15;i++){
+		for(int i=0;i<15;i++){
 			int w=TheGameKeeper->GetBoxWinner(i);
 			if(w){
 				w--;
