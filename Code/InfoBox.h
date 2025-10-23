@@ -1,4 +1,4 @@
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 
 #ifndef __InfoBox__
 #define __InfoBox__

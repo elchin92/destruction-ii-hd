@@ -8,7 +8,7 @@
 #ifndef DIUTIL_H
 #define DIUTIL_H
 
-#include <dinput.h>
+// #include <dinput.h>  // Заменено на SDL2_DirectInputCompat.h через /FI (forced include)
 
 
 

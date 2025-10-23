@@ -1,6 +1,6 @@
 #include "ddex4.h"
 #include <stdio.h>
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 #include "ddutil.h"
 
 #define DestructionSetPixelSingleColor()	doffset = dX + dsDesc.lPitch*dY;soffset = sX + ssDesc.lPitch*sY;readPixel = *((BYTE* )(((BYTE*)(ssDesc.lpSurface))+soffset));if(readPixel)if(BlitColor)*((BYTE* )(((BYTE*)(dsDesc.lpSurface))+doffset))=BlitColor;else*((BYTE* )(((BYTE*)(dsDesc.lpSurface))+doffset))=readPixel;
@@ -683,7 +683,7 @@ void Game::IntText(int x, int y, int number){
 
 
 void Game::SetCamera(){
-		// Ge fan i det h�r ( Draw correct map )
+		// Ge fan i det h�r ( Draw correct map )
 	apl->UpdateCamera();
 	Xstart=apl->GetCameraX()/32;
 	Ystart=apl->GetCameraY()/32;

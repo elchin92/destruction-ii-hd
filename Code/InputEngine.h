@@ -1,7 +1,7 @@
-#ifndef __InputEngine__ 
+#ifndef __InputEngine__
 #define __InputEngine__
 
-#include <dinput.h>
+// #include <dinput.h>  // Заменено на SDL2_DirectInputCompat.h через /FI (forced include)
 
 #define KeyboardKeys	256
 #define JoyKeyStart		256

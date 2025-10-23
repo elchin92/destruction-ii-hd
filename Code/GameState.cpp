@@ -4,7 +4,7 @@
 #include "InfoBox.h"
 #include "Debugger.h"
 #include <stdio.h>
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 #include "ddutil.h"
 gState	GameStatus;
 GameState * cgs;

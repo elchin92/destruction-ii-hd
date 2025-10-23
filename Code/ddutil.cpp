@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 #include <windows.h>
 #include <windowsx.h>
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 #include "ddutil.h"
 
 

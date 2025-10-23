@@ -1,5 +1,5 @@
 #include "ActiveMenuItem.h"
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 #include <windef.h>
 #ifndef __ButtonMenuItem__ 
 #define __ButtonMenuItem__

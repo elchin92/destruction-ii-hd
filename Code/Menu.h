@@ -4,7 +4,7 @@
 #ifndef __Menu__
 #define __Menu__
 
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 
 enum PredefinedStyle{pLoadSave,pSettings,pControls,pGameSetup,pEnemySetup, pPlayerSetup};
 

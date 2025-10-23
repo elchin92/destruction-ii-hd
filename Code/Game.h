@@ -1,10 +1,10 @@
-#ifndef __Game__ 
+#ifndef __Game__
 #define __Game__
 
 
 
 
-#include <ddraw.h>
+// #include <ddraw.h>  // Заменено на SDL2_DirectDrawCompat.h через /FI (forced include)
 #include "definitions.h"
 #include "SaveableClass.h"
 #include "GameState.h"
