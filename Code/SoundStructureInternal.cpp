@@ -8,6 +8,7 @@
 #include "Settings.h"
 #include "Menu.h"
 #include "Debugger.h"
+#include <algorithm> // For std::max
 
 //-----------------------------------------------------------------------------
 // Name: CreateSound()
@@ -461,7 +462,7 @@ void SoundStructure::UpdatePanAndVolume(){
 		}
 	}
 
-	long Volume=max(Volumes[0],Volumes[1]);
+	long Volume=std::max(Volumes[0],Volumes[1]);
 
 	// Don't change the volume unless it has changed significantly
 	if(abs(LastVolume-Volume) >= VOL_MINDIF){

@@ -1,7 +1,7 @@
 #include "StrConversions.h"
 #include <stdio.h>
 
-char * Armor2Str(int ArmorGrade){
+const char * Armor2Str(int ArmorGrade){
 	if(ArmorGrade == 0)
 		return "-";
 	else if(ArmorGrade == 1)
@@ -12,7 +12,7 @@ char * Armor2Str(int ArmorGrade){
 		return "Blue";
 	return "ERROR";
 }
-char * BodyColor2Str(int BodyColor){
+const char * BodyColor2Str(int BodyColor){
 
 	//return BodyColor2Name[BodyColor];
 	if(BodyColor==0)
@@ -36,7 +36,7 @@ char * BodyColor2Str(int BodyColor){
 
 	return "ERROR";
 }
-char * HairColor2Str(int HairColor){
+const char * HairColor2Str(int HairColor){
 
 	//return HairColor2Name[HairColor];
 	if(HairColor==0)
@@ -55,7 +55,7 @@ char * HairColor2Str(int HairColor){
 
 	return "ERROR";
 }
-char * Bool2Str(BOOL Answer){
+const char * Bool2Str(BOOL Answer){
 	if(Answer)
 		return "Yes";
 	else 

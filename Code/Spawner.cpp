@@ -43,7 +43,8 @@ void Spawner::SpawnEnemiesForNewRound(){
 
 void Spawner::SpawnParticularMortal(int MType){
 	int ep=GetEarnedPoints();
-	for(int uType=0; ep&&uType<Units[MType]-1; ep--){
+	int uType=0; // C++20: declare before loop so it's accessible after
+	for(; ep&&uType<Units[MType]-1; ep--){
 		if(rand()%100<TheSettings->GetUpgradePercentage(MType2eType[MType]))
 			uType++;
 		if((rand()%(5+3*Units[MType]))==0)

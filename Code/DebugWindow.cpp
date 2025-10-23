@@ -103,7 +103,7 @@ int DebugWindow::getNextX(){return x+borderwidth;}
 int DebugWindow::getNextY(){return y+borderwidth+MonitorCount*(fh+2);}
 int DebugWindow::getMaxWidth(){return width-2*borderwidth;}
 
-void DebugWindow::Broadcast(channel chan, char * msg){
+void DebugWindow::Broadcast(channel chan, const char * msg){
 	
 
 	Beacon(2355);

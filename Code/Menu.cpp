@@ -164,7 +164,8 @@ void Menu::SetNeighbours(int Columns){
 
 	MenuItem * CurrentMenuItem=TheMenuItems;
 
-	for(	MenuItem * temp=TheMenuItems;temp->IsBorder();temp=temp->nextMenuItem);
+	MenuItem * temp; // C++20: declare before loop so it's accessible after
+	for(temp=TheMenuItems;temp->IsBorder();temp=temp->nextMenuItem);
 
 	for(int x=0;CurrentMenuItem;x++, CurrentMenuItem=CurrentMenuItem->nextMenuItem){
 		if(CurrentMenuItem->IsBorder()){

@@ -42,8 +42,8 @@ public:
 	void AddMonitor(char * name, char * p);
 	void AddMonitor(char * name, double * p);
 
-	void Broadcast(channel chan, char * msg);
-	void Broadcast(channel chan, int msg); 
+	void Broadcast(channel chan, const char * msg);
+	void Broadcast(channel chan, int msg);
 	void Broadcast(channel chan, double msg); 
 	void Toggle();
 

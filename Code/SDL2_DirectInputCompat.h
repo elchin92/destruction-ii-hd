@@ -169,6 +169,7 @@ typedef BOOL (CALLBACK *LPDIENUMDEVICEOBJECTSCALLBACK)(LPDIDEVICEOBJECTINSTANCE 
 #define DIK_MINUS           SDL_SCANCODE_MINUS
 #define DIK_EQUALS          SDL_SCANCODE_EQUALS
 #define DIK_BACK            SDL_SCANCODE_BACKSPACE
+#define DIK_BACKSPACE       DIK_BACK            // Alias for DIK_BACK (DirectInput compatibility)
 #define DIK_TAB             SDL_SCANCODE_TAB
 #define DIK_Q               SDL_SCANCODE_Q
 #define DIK_W               SDL_SCANCODE_W

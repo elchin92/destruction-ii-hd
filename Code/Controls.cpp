@@ -252,7 +252,8 @@ void Controls::PrintKeys(){
 	DP("printed on..");
 	print << " Left Player\n\n";
 	DP("printed left player");
-	for(int x=0;x<INGAMEKEYS;x++){
+	int x; // C++20: declare before loops so variable is accessible in both
+	for(x=0;x<INGAMEKEYS;x++){
 		print << KeyNames[x] << ": " << DIK2STR(Keys[0][x]) << endl;
 	}
 	print << "\n Right Player\n\n";

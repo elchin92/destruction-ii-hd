@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <fstream>
 
+using namespace std; // For ifstream, ofstream
+
 Settings * TheSettings;
 
 #define Dist 35
@@ -420,9 +422,7 @@ void Settings::Setup(){
 void Settings::SaveSettings(){
 
 	DP("Saving settings...");
-	ofstream File(SettingsFileName);
-					
-	File.setmode( filebuf::binary );
+	ofstream File(SettingsFileName, ios::binary); // C++20: use ios::binary in constructor
 	PreSave();
 	SaveClass(&File);
 	PostSave();
@@ -431,8 +431,7 @@ void Settings::SaveSettings(){
 
 void Settings::LoadSettings(){
 
-	ifstream File(SettingsFileName,ios::nocreate, filebuf::openprot);
-	File.setmode( filebuf::binary );
+	ifstream File(SettingsFileName, ios::binary | ios::in); // C++20: ios::nocreate removed
 	BYTE KeyLength=0;
 	char tTopic[100];
 	File.read(&KeyLength, 1);

@@ -74,12 +74,14 @@ struct SDL2DirectSound;
 // Type Definitions (DirectSound → SDL2 Mapping)
 // ============================================================================
 
-typedef SDL2DirectSound*     IDirectSound;
-typedef SDL2SoundBuffer*     IDirectSoundBuffer;
+// CRITICAL: IDirectSound/IDirectSoundBuffer are base types (not pointers)
+// This matches original DirectSound API where IDirectSound is a class, not a pointer
+typedef SDL2DirectSound      IDirectSound;
+typedef SDL2SoundBuffer      IDirectSoundBuffer;
 
-typedef IDirectSound*        LPDIRECTSOUND;
-typedef IDirectSoundBuffer*  LPDIRECTSOUNDBUFFER;
-typedef IDirectSoundBuffer** LPLPDIRECTSOUNDBUFFER;
+typedef IDirectSound*        LPDIRECTSOUND;         // Single pointer
+typedef IDirectSoundBuffer*  LPDIRECTSOUNDBUFFER;   // Single pointer
+typedef IDirectSoundBuffer** LPLPDIRECTSOUNDBUFFER; // Double pointer (for output params)
 
 // ============================================================================
 // DirectSound Structures

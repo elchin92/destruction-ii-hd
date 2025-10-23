@@ -99,6 +99,10 @@ file(GLOB_RECURSE GAME_SOURCES
 # Remove old code files
 list(FILTER GAME_SOURCES EXCLUDE REGEX ".*Old Code.*")
 
+# Exclude diutil.cpp (Force Feedback utilities - not needed for keyboard/mouse gameplay)
+# This file requires extensive DirectInput FF structures that we don't need to implement
+list(FILTER GAME_SOURCES EXCLUDE REGEX ".*diutil\\.cpp$")
+
 # Collect all header files
 file(GLOB_RECURSE GAME_HEADERS
     "${CMAKE_SOURCE_DIR}/Code/*.h"
