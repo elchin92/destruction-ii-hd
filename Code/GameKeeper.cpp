@@ -35,16 +35,16 @@ GameKeeper::GameKeeper(){
 	RegisterItem("CupLevelWinner",&CupLevelWinner,sizeof(CupLevelWinner));
 
 
-	SetPlayers[0] = spOneOnOne;
-	SetPlayers[1] = spCup;
-	SetPlayers[2] = spLeague;
-	Initiate[0] = initiateOneOnOne;
-	Initiate[1] = initiateCup;
-	Initiate[2] = initiateLeague;
+	SetPlayers[0] = &GameKeeper::spOneOnOne;
+	SetPlayers[1] = &GameKeeper::spCup;
+	SetPlayers[2] = &GameKeeper::spLeague;
+	Initiate[0] = &GameKeeper::initiateOneOnOne;
+	Initiate[1] = &GameKeeper::initiateCup;
+	Initiate[2] = &GameKeeper::initiateLeague;
 
-	GetString[0] = gsOneOnOne;
-	GetString[1] = gsCup;
-	GetString[2] = gsLeague;
+	GetString[0] = &GameKeeper::gsOneOnOne;
+	GetString[1] = &GameKeeper::gsCup;
+	GetString[2] = &GameKeeper::gsLeague;
 
 	LeagueMatches = 0; // required for getmatches
 
@@ -535,6 +535,7 @@ void GameKeeper::PostLoad(int PerformLoad){
 		TheGame->KillAll();
 
 		nextSaveableClass=PlayArray[0];
+		int pl;
 		for(pl=0;pl<NumberOfPlayers-1;pl++){
 			PlayArray[pl]->nextSaveableClass=PlayArray[pl+1];
 		}
@@ -548,7 +549,8 @@ void GameKeeper::PostLoad(int PerformLoad){
 void GameKeeper::PostSave(){
 	nextSaveableClass=PlayArray[0];
 
-	for(int pl=0;pl<NumberOfPlayers-1;pl++){
+	int pl;
+	for(pl=0;pl<NumberOfPlayers-1;pl++){
 		PlayArray[pl]->nextSaveableClass=PlayArray[pl+1];
 	}
 	PlayArray[pl]->nextSaveableClass = TheLastRounds;
