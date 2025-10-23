@@ -11,6 +11,7 @@
 #include "CenterSquareEvent.h"
 #include "Quadrants.h"
 #include "Debugger.h"
+#include <algorithm> // C++20: for std::min
 
 
 

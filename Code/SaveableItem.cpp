@@ -9,11 +9,14 @@
 #include "definitions.h"
 #include "TimeKeeper.h"
 #include "Debugger.h"
+
+using namespace std; // C++20: for ios::binary, endl, etc.
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-SaveableItem::SaveableItem(char* iKeyName, void * iData, int iBytes)
+SaveableItem::SaveableItem(const char* iKeyName, void * iData, int iBytes) // C++20: const char*
 {
 	// No Beacons in here!!
 	nextSaveableItem=NULL;
@@ -33,7 +36,7 @@ ReadResult SaveableItem::Read(SaveableClass * MotherClass, ifstream * savefile, 
 	char iKey[100];
 	BYTE KeyLength;
 
-	(*savefile).read(&KeyLength, 1);
+	(*savefile).read(reinterpret_cast<char*>(&KeyLength), 1); // C++20: BYTE* -> char* cast
 	(*savefile).read(iKey,KeyLength);
 	iKey[KeyLength]='\0';
 
@@ -66,10 +69,10 @@ ReadResult SaveableItem::InternalRead(SaveableClass * MotherClass, ifstream * sa
 	}
 
 	DP("Reading the item....");
-	BYTE * temp = new BYTE[Bytes]; 
+	BYTE * temp = new BYTE[Bytes];
 	// Correct key, read Data
 
-	(*savefile).read(temp,Bytes);
+	(*savefile).read(reinterpret_cast<char*>(temp), Bytes); // C++20: BYTE* -> char* cast
 
 	for(int i=0;i<Bytes;i++){
 		BYTE * p = ((BYTE *)Data+i);
@@ -88,11 +91,11 @@ ReadResult SaveableItem::InternalRead(SaveableClass * MotherClass, ifstream * sa
 void SaveableItem::Write(SaveableClass * MotherClass, ofstream * savefile){
 	DP("Saving an item...");
 	BYTE Length = (BYTE)strlen(KeyName);
-	(*savefile).write(&Length,1);
+	(*savefile).write(reinterpret_cast<const char*>(&Length), 1); // C++20: BYTE* -> char* cast
 	(*savefile).write(KeyName,Length);
 	DP(KeyName);
 	for(int i=0;i<Bytes;i++){
-		(*savefile).write(((BYTE *)Data+i),1);
+		(*savefile).write(reinterpret_cast<const char*>(((BYTE *)Data+i)), 1); // C++20: BYTE* -> char* cast
 		MotherClass->ReportData((*((BYTE *)Data+i)));
 	}
 	if(nextSaveableItem)

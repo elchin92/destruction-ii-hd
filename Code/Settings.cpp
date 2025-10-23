@@ -9,9 +9,9 @@
 #include "Debugger.h"
 #include "Debugger.h"
 #include <stdio.h>
-#include <fstream>
 
-using namespace std; // For ifstream, ofstream
+// Note: <fstream> already included via SaveableClass.h
+// Use std::ifstream, std::ofstream explicitly to avoid conflicts
 
 Settings * TheSettings;
 
@@ -422,7 +422,7 @@ void Settings::Setup(){
 void Settings::SaveSettings(){
 
 	DP("Saving settings...");
-	ofstream File(SettingsFileName, ios::binary); // C++20: use ios::binary in constructor
+	std::ofstream File(SettingsFileName, std::ios::binary); // C++20: use std:: prefix explicitly
 	PreSave();
 	SaveClass(&File);
 	PostSave();
@@ -431,7 +431,7 @@ void Settings::SaveSettings(){
 
 void Settings::LoadSettings(){
 
-	ifstream File(SettingsFileName, ios::binary | ios::in); // C++20: ios::nocreate removed
+	std::ifstream File(SettingsFileName, std::ios::binary | std::ios::in); // C++20: use std:: prefix explicitly
 	BYTE KeyLength=0;
 	char tTopic[100];
 	File.read(reinterpret_cast<char*>(&KeyLength), 1); // C++20: explicit cast needed

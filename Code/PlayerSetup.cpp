@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <fstream>
 
+using namespace std; // C++20: for ofstream, ifstream, endl, ios::
+
 PlayerSetup * ThePlayerSetup;
 
 const char * PlayerDir = "Players";
@@ -225,7 +227,9 @@ void PlayerSetup::LoadPlayers(){
 	for(NumberOfPlayers=0;NumberOfPlayers<16;NumberOfPlayers++){
 		Beacon(8401100+NumberOfPlayers);
 		sprintf(FileName,"%s\\Player%i.DPI",PlayerDir,NumberOfPlayers);
-		ifstream File(FileName, ios::nocreate, filebuf::openprot );
+		ifstream File(FileName, ios::in); // C++20: ios::nocreate and filebuf::openprot removed
+		if(!File.is_open()) // C++20: check if file exists
+			break;
 		File.getline(Data,60,'\n');
 		if(!strcmp(Data,""))
 			break;

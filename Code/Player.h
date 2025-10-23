@@ -203,7 +203,7 @@ public:
 	void SwitchHairColor();
 	void SwitchBodyColor();
 	void SetOpponent(Player * iOp);
-	void SetName(char * iName);
+	void SetName(const char * iName); // C++20: const char*
 	void BecomeShielded();
 	void BecomeUnshielded();
 	void TurnInvisible();

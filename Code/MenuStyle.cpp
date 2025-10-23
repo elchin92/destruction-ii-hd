@@ -5,6 +5,7 @@
 #include "BorderEndMenuItem.h"
 #include "ActiveMenuItem.h"
 #include "Debugger.h"
+#include <algorithm> // C++20: for std::min
 
 #define UsingSisterStyle (SisterStyle!=NULL)
 
@@ -198,7 +199,7 @@ void MenuStyle::CalculateMenuDimensions(int XPlay, int YPlay, int LockedCols, in
 	int Original[2]={XPlay,YPlay};
 
 
-	// Får inte överstiga xplay!!!!! måset kunna skriva <== ??
+	// Fï¿½r inte ï¿½verstiga xplay!!!!! mï¿½set kunna skriva <== ??
 	if(BorderColor){
 
 

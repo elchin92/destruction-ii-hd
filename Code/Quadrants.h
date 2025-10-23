@@ -18,6 +18,6 @@
 #define MortalQuadLoop() MortalQuadLoopDM(Mover)
 #define MortalQuadLoopXY(ixs,iys) NineLoopXY(ixs,iys) InternalMortalQuadLoop()
 #define TwoWayLoop for(int i=0, twxy=xy;i<1+MovingTwice;i++,twxy=!twxy)
-#define twoWayLoop for(    i=0, twxy=xy;i<1+MovingTwice;i++,twxy=!twxy)
+#define twoWayLoop for(int i=0, twxy=xy;i<1+MovingTwice;i++,twxy=!twxy) // C++20: added 'int' for loop variable scoping
 
 #endif

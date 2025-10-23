@@ -90,7 +90,7 @@ void InfoBox::Print(int xRel, int yRel, int text){
 
 }
 
-void InfoBox::Print(int xRel, int yRel, char * text){
+void InfoBox::Print(int xRel, int yRel, const char * text){ // C++20: const char*
 	TheGame->Text(x+xAdj+xRel+txAdj,y+yAdj+yRel+tyAdj,text);
 	DP("Printed!");
 }

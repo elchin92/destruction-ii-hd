@@ -1578,11 +1578,11 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 
 	Beacon(9);
 #ifdef __D2PROTECTED__
-	ifstream RFile( "Data\\Reg.Key", ios::nocreate, filebuf::openprot );
+	ifstream RFile( "Data\\Reg.Key", ios::in ); // C++20: removed ios::nocreate, filebuf::openprot
 
 	char Tempo[2][50];
 
-	if(	RFile.getline(Tempo[0],50,'\n') && RFile.getline(Tempo[1],50,'\n') ){
+	if(	RFile.is_open() && RFile.getline(Tempo[0],50,'\n') && RFile.getline(Tempo[1],50,'\n') ){
 		ISREGISTERED=TRUE;
 		sprintf(UserCode,"%s\n",Tempo[1]);
 		DP("UserName");
@@ -1683,7 +1683,7 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 			mmsg[a++]=' ';
 			mmsg[a++]='\0';
 
-			ifstream RFile( "Data\\Reg.Key", ios::nocreate, filebuf::openprot );
+			ifstream RFile( "Data\\Reg.Key", ios::in ); // C++20: removed ios::nocreate, filebuf::openprot
 			RFile.getline(mname,50,'\n');
 			RFile.close();
 

@@ -6,6 +6,7 @@
 #include "StopReason.h"
 #include "LastRoundsInfo.h"
 #include "Debugger.h"
+#include <algorithm> // C++20: for std::min
 
 Mortal * TheMortals;
 Mortal * TheDeadMortals;

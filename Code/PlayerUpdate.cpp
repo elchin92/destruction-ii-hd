@@ -22,7 +22,7 @@ void Player::ReportKill(Mortal * Dead){
 	GiveReward(Dead->GetPrice(Team));
 
 }
-void Player::SetName(char * iName){
+void Player::SetName(const char * iName){ // C++20: const char*
 	strcpy(Name,iName);
 }
 void Player::SetTeam(int iTeam){

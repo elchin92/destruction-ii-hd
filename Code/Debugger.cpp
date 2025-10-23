@@ -22,7 +22,7 @@ void Beacon(int Number){
 
 	if(Number==-9876){
 			DeleteFile("Beacon.txt");
-			BeaconFile = new ofstream("Beacon.txt", ios::app, filebuf::openprot);
+			BeaconFile = new ofstream("Beacon.txt", ios::app); // C++20: removed filebuf::openprot
 	}
 
 

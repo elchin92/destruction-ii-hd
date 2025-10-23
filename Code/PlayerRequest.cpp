@@ -3,6 +3,7 @@
 #include "Weapon.h"
 #include "Game.h"
 #include <stdio.h>
+#include <algorithm> // C++20: for std::min
 
 int Player::GetExtraThrowingSpeed(){return PressingMovementKeys()*GetSpeed();}
 
@@ -59,7 +60,7 @@ int Player::GetMoneySpentPercentage(int Store){
 	if(Zum==0)
 		return 0;
 	int p = (1005*MoneySpent[Store])/(10*Zum);
-	return min(100,p);
+	return std::min(100,p); // C++20: use std::min explicitly
 }
 int Player::GetDeath(DamageType dType, int iTeam){
 	return Deaths[dType][iTeam];
