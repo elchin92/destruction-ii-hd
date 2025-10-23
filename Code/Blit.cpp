@@ -200,7 +200,7 @@ void Game::BlitGUI(int player){
 			if(PLDOT&&apl->PRDR()||!PLDOT&&apl->URDR()&&!aMortal->IsInvisible())
 				BlitRadarDot(aMortal, 0);
 		}
-		for(aMortal=TheMortals;aMortal;aMortal=aMortal->nextMortal){
+		for(Mortal * aMortal=TheMortals;aMortal;aMortal=aMortal->nextMortal){
 			PLDOT=aMortal->GetMType()==M_PL||aMortal->GetMType()==M_CL;
 			if(PLDOT&&apl->PRDR()||!PLDOT&&apl->URDR()&&!aMortal->IsInvisible())
 				BlitRadarDot(aMortal, 1);
