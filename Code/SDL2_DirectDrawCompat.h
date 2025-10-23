@@ -302,12 +302,62 @@ HRESULT DDSetColorKey(IDirectDrawSurface7* surface, COLORREF rgb);
 
 // Blit flags
 #define DDBLT_WAIT                      0x01000000
+#define DDBLT_COLORFILL                 0x00000400
 #define DDBLTFAST_WAIT                  0x00000010
 #define DDBLTFAST_NOCOLORKEY            0x00000000
+#define DDBLTFAST_SRCCOLORKEY           0x00000008
 
 // Lock flags
 #define DDLOCK_WAIT                     0x00000001
 #define DDLOCK_READONLY                 0x00000010
 #define DDLOCK_WRITEONLY                0x00000020
+#define DDLOCK_SURFACEMEMORYPTR         0x00000000
+
+// Color key flags
+#define DDCKEY_SRCBLT                   0x00000008
+
+// Flip flags
+#define DDFLIP_WAIT                     0x00000001
+
+// GetFlipStatus flags
+#define DDGFS_ISFLIPDONE                0x00000001
+
+// Return codes
+#define DDERR_WASSTILLDRAWING           0x8876001C
+
+// ============================================================================
+// DDCAPS - DirectDraw Capabilities
+// ============================================================================
+struct DDCAPS {
+    DWORD   dwSize;
+    DWORD   dwCaps;
+    DWORD   dwCaps2;
+    DWORD   dwCKeyCaps;
+    DWORD   dwFXCaps;
+    DWORD   dwFXAlphaCaps;
+    DWORD   dwPalCaps;
+    DWORD   dwSVCaps;
+    DWORD   dwAlphaBltConstBitDepths;
+    DWORD   dwAlphaBltPixelBitDepths;
+    DWORD   dwAlphaBltSurfaceBitDepths;
+    DWORD   dwAlphaOverlayConstBitDepths;
+    DWORD   dwAlphaOverlayPixelBitDepths;
+    DWORD   dwAlphaOverlaySurfaceBitDepths;
+    DWORD   dwZBufferBitDepths;
+    DWORD   dwVidMemTotal;
+    DWORD   dwVidMemFree;
+    DWORD   dwMaxVisibleOverlays;
+    DWORD   dwCurrVisibleOverlays;
+    DWORD   dwNumFourCCCodes;
+    DWORD   dwAlignBoundarySrc;
+    DWORD   dwAlignSizeSrc;
+    DWORD   dwAlignBoundaryDest;
+    DWORD   dwAlignSizeDest;
+    DWORD   dwAlignStrideAlign;
+    DWORD   dwRops[8];
+    DWORD   dwReserved1;
+    DWORD   dwReserved2;
+    DWORD   dwReserved3;
+};
 
 #endif // __SDL2_DIRECTDRAW_COMPAT_H__

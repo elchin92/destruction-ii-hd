@@ -84,20 +84,14 @@ typedef IDirectSoundBuffer** LPLPDIRECTSOUNDBUFFER;
 // DirectSound Structures
 // ============================================================================
 
-// Wave format structure (from mmsystem.h)
+// Wave format structure - already defined by Windows SDK mmeapi.h
+// We just need to make sure WAVE_FORMAT_PCM is defined
 #ifndef WAVE_FORMAT_PCM
 #define WAVE_FORMAT_PCM 1
 #endif
 
-typedef struct tWAVEFORMATEX {
-    WORD  wFormatTag;
-    WORD  nChannels;
-    DWORD nSamplesPerSec;
-    DWORD nAvgBytesPerSec;
-    WORD  nBlockAlign;
-    WORD  wBitsPerSample;
-    WORD  cbSize;
-} WAVEFORMATEX, *LPWAVEFORMATEX;
+// NOTE: WAVEFORMATEX is provided by Windows SDK (mmeapi.h)
+// No need to redefine it here
 
 // DirectSound capabilities
 struct DSCAPS {

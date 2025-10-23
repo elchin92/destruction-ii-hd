@@ -188,14 +188,16 @@ struct SDL2InputDevice;
 // Type Definitions
 // ============================================================================
 
+// DirectInput interface pointers
 typedef SDL2DirectInput*    IDirectInput7;
 typedef SDL2DirectInput*    IDirectInput;
 typedef SDL2InputDevice*    IDirectInputDevice;
 typedef SDL2InputDevice*    IDirectInputDevice2;
 
-typedef IDirectInput7*       LPDIRECTINPUT7;
-typedef IDirectInputDevice*  LPDIRECTINPUTDEVICE;
-typedef IDirectInputDevice2* LPDIRECTINPUTDEVICE2;
+// Legacy pointer types (note: IDirectInputDevice is already a pointer!)
+typedef SDL2DirectInput*     LPDIRECTINPUT7;
+typedef SDL2InputDevice*     LPDIRECTINPUTDEVICE;   // NOT IDirectInputDevice*!
+typedef SDL2InputDevice*     LPDIRECTINPUTDEVICE2;  // NOT IDirectInputDevice2*!
 
 typedef unsigned char        BYTE;
 
