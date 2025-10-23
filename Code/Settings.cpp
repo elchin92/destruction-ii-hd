@@ -199,8 +199,9 @@ Settings::Settings(){
 	EnemySetupMenu->AddStaticItem("Cars");
 	EnemySetupMenu->AddStaticItem("Machines");
 
+	int et; // C++20: declare outside loops for reuse
 	EnemySetupMenu->AddStaticItem("Base Enemies");
-	for(int et=0;et<eTypes;et++){
+	for(et=0;et<eTypes;et++){
 		EnemySettings[et][esBC]=EnemySetupMenu->AddNumericalSlider("",EnemyDefaultSettings[et][esBC],0,100,1);
 
 	}

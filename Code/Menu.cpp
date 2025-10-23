@@ -219,7 +219,7 @@ int Menu::GetHeight(){
 
 
 
-ActiveMenuItem * Menu::AddNumericalSlider(const char * SliderTitle,int Start, int Min,int Max, int Step, char * unit, int pre){
+ActiveMenuItem * Menu::AddNumericalSlider(const char * SliderTitle,int Start, int Min,int Max, int Step, const char * unit, int pre){ // C++20: const char*
 	return AddMenuItem(new NumericalSliderMenuItem(TheMenuStyle,SliderTitle,Start,Min,Max,Step, unit, pre));
 }
 ActiveMenuItem * Menu::AddNumericalSliderWPM(const char * SliderTitle,int Start, int Min, int * MaxPointer, int Step){

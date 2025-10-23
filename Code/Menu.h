@@ -62,7 +62,7 @@ public:
 
 	ActiveMenuItem * AddMenuItem(MenuItem * mi, int IsOption=FALSE);
 
-	ActiveMenuItem * AddNumericalSlider(const char * SliderTitle,int Start, int Min, int Max, int Step=1, char * unit=NULL, int pre=0);
+	ActiveMenuItem * AddNumericalSlider(const char * SliderTitle,int Start, int Min, int Max, int Step=1, const char * unit=NULL, int pre=0); // C++20: const char*
 	ActiveMenuItem * AddNumericalSliderWPM(const char * SliderTitle,int Start, int Min, int * MaxPointer, int Step=1);
 	ActiveMenuItem * AddGraphicalSlider(const char * SliderTitle,int Start, int Max);
 	ActiveMenuItem * AddSwitch(const char * SliderTitle, gState nextState,int SubMenu);
