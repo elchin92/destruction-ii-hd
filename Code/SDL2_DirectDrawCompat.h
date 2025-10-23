@@ -18,9 +18,10 @@
  *******************************************************************************/
 
 // ===========================================================================
-// CRITICAL: Prevent inclusion of real DirectDraw headers!
-// Must be defined BEFORE any Windows headers that might transitively include them
+// CRITICAL: Block ddraw.h BEFORE including ANY headers!
 // ===========================================================================
+
+// Step 1: Define ALL possible ddraw.h guards FIRST (before any includes)
 #ifndef _DDRAW_H
 #define _DDRAW_H
 #endif
@@ -30,13 +31,19 @@
 #ifndef __ddraw_h__
 #define __ddraw_h__
 #endif
+#ifndef DIRECTDRAW_VERSION
+#define DIRECTDRAW_VERSION 0x0700  // Lock to DirectDraw 7
+#endif
 
+// Step 2: NOW it's safe to include Windows headers (ddraw.h blocked)
+#include <windows.h> // ddraw.h should be blocked by guards above
+#include <unknwn.h>  // For IUnknown
+
+// Step 3: Include SDL2 and C++ standard library
 #include <SDL2/SDL.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
-#include <windows.h> // For HRESULT, RECT, COLORREF, etc.
-#include <unknwn.h>  // For IUnknown
 
 // ============================================================================
 // DirectDraw HRESULT Codes (Minimal Set)
