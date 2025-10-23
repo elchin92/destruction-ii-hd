@@ -1577,6 +1577,7 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 	}
 
 	Beacon(9);
+	printf("[DEBUG] Beacon(9) passed - after SetPalette\n"); fflush(stdout);
 #ifdef __D2PROTECTED__
 	ifstream RFile( "Data\\Reg.Key", ios::in ); // C++20: removed ios::nocreate, filebuf::openprot
 
@@ -1712,10 +1713,12 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 
 #endif
 	// Create the fonts
+	printf("[DEBUG] About to call CreateFont for g_hFont\n"); fflush(stdout);
 	g_hFont = CreateFont(25,
 		0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
 		ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 		PROOF_QUALITY, VARIABLE_PITCH,"Arial");
+	printf("[DEBUG] CreateFont returned: %p\n", g_hFont); fflush(stdout);
 	if(!g_hFont)
 		UserMessage("Error","Destruction requires the Arial font!");
 	
@@ -1768,7 +1771,8 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 
 	g_hFontAngled[1] = CreateFontIndirect(plf); 
 
-	LocalFree((LOCALHANDLE) plf); 
+	LocalFree((LOCALHANDLE) plf);
+	printf("[DEBUG] All CreateFont calls completed\n"); fflush(stdout);
 
 	thePen = CreatePen(PS_SOLID,5,RGB(0,0,200));
 	aPen = CreatePen(PS_SOLID,5,RGB(100,0,200));
@@ -1786,7 +1790,8 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 	RealBrush.lbColor=RGB(100,0,200);
 	aBrush = CreateBrushIndirect(&RealBrush);
 	RealBrush.lbColor=RGB(255,0,0);
-	lifeBrush = CreateBrushIndirect(&RealBrush);	
+	lifeBrush = CreateBrushIndirect(&RealBrush);
+	printf("[DEBUG] All GDI objects (Pen/Brush) created\n"); fflush(stdout);
 
 #ifdef __D2PROTECTED__
 	strcpy(RegisterCode,Tempo[1]);
@@ -1800,12 +1805,13 @@ HRESULT Game::InitGame(HINSTANCE hInstance, int nCmdShow){
 	TheSettings->LoadSettings();
 
 	Beacon(11);
+	printf("[DEBUG] About to call TheIntro->ForcedSwitchState(INTRO)\n"); fflush(stdout);
 
-	
 	//TheFullVersionInfo->ForcedSwitchState(FULLVERSION);
 
 
 	TheIntro->ForcedSwitchState(INTRO);
+	printf("[DEBUG] TheIntro->ForcedSwitchState() completed\n"); fflush(stdout);
 	
 	//int result;
 	//SystemParametersInfo(SPI_SCREENSAVERRUNNING, true, &result, 0);

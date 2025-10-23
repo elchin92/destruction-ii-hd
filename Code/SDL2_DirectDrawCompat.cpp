@@ -182,8 +182,10 @@ HRESULT SDL2Surface::ReleaseDC(HDC hdc) {
 }
 
 HRESULT SDL2Surface::SetPalette(LPDIRECTDRAWPALETTE palette) {
+    printf("[DEBUG] SetPalette() called with palette: %p\n", palette); fflush(stdout);
     // SDL2 doesn't use palettes in the same way
     // Modern graphics use 32-bit RGBA
+    printf("[DEBUG] SetPalette() returning OK\n"); fflush(stdout);
     return DD_OK;
 }
 
@@ -249,22 +251,30 @@ HRESULT SDL2Surface::GetSurfaceDesc(DDSURFACEDESC2* desc) {
 }
 
 HRESULT SDL2Surface::GetAttachedSurface(DDSCAPS2* caps, LPDIRECTDRAWSURFACE7* surface) {
-    if (!surface || !caps) return DDERR_INVALIDPARAMS;
+    printf("[DEBUG] GetAttachedSurface() called\n"); fflush(stdout);
+
+    if (!surface || !caps) {
+        printf("[ERROR] GetAttachedSurface() - INVALID PARAMS\n"); fflush(stdout);
+        return DDERR_INVALIDPARAMS;
+    }
 
     // Check if requesting backbuffer
     if (caps->dwCaps & DDSCAPS_BACKBUFFER) {
         if (attachedBackBuffer) {
             *surface = attachedBackBuffer;
+            printf("[DEBUG] GetAttachedSurface() - Returning backbuffer OK\n"); fflush(stdout);
             return DD_OK;
         } else {
             // No backbuffer attached
             *surface = nullptr;
+            printf("[ERROR] GetAttachedSurface() - NO BACKBUFFER!\n"); fflush(stdout);
             return DDERR_GENERIC;
         }
     }
 
     // Other surface types not supported
     *surface = nullptr;
+    printf("[DEBUG] GetAttachedSurface() - Unknown caps\n"); fflush(stdout);
     return DDERR_GENERIC;
 }
 
@@ -333,6 +343,8 @@ HRESULT SDL2DirectDraw::SetDisplayMode(DWORD width, DWORD height, DWORD bpp, DWO
 }
 
 HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7* surface, void* unkOuter) {
+    printf("[DEBUG] CreateSurface() called\n"); fflush(stdout);
+
     if (!desc || !surface) return DDERR_GENERIC;
 
     int width = desc->dwWidth;
@@ -342,12 +354,17 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
     if (width == 0) width = screenWidth;
     if (height == 0) height = screenHeight;
 
+    printf("[DEBUG] Creating surface: %dx%d\n", width, height); fflush(stdout);
+
     // Create SDL texture
     SDL_Texture* texture = SDL_CreateTexture(renderer,
                                             SDL_PIXELFORMAT_ARGB8888,
                                             SDL_TEXTUREACCESS_TARGET,
                                             width, height);
-    if (!texture) return DDERR_GENERIC;
+    if (!texture) {
+        printf("[ERROR] SDL_CreateTexture FAILED!\n"); fflush(stdout);
+        return DDERR_GENERIC;
+    }
 
     // Create our surface wrapper
     SDL2Surface* newSurface = new SDL2Surface(texture, width, height);
@@ -355,12 +372,14 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
     // Handle primary surface with back buffer
     if (desc->dwFlags & DDSD_CAPS) {
         if (desc->ddsCaps.dwCaps & DDSCAPS_PRIMARYSURFACE) {
+            printf("[DEBUG] Creating PRIMARY surface\n"); fflush(stdout);
             primarySurface = newSurface;
 
             // Create back buffer if flippable (double buffering)
             if ((desc->ddsCaps.dwCaps & DDSCAPS_FLIP) &&
                 (desc->dwFlags & DDSD_BACKBUFFERCOUNT) &&
                 (desc->dwBackBufferCount > 0)) {
+                printf("[DEBUG] Creating BACKBUFFER\n"); fflush(stdout);
                 SDL_Texture* backTex = SDL_CreateTexture(renderer,
                                                         SDL_PIXELFORMAT_ARGB8888,
                                                         SDL_TEXTUREACCESS_TARGET,
@@ -370,12 +389,16 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
                     // CRITICAL: Store backbuffer in primary surface so GetAttachedSurface() can find it
                     newSurface->attachedBackBuffer = backBuf;
                     backBuffer = backBuf;  // Also store in DirectDraw object for global access
+                    printf("[DEBUG] Backbuffer created and attached OK\n"); fflush(stdout);
+                } else {
+                    printf("[ERROR] Backbuffer texture creation FAILED!\n"); fflush(stdout);
                 }
             }
         }
     }
 
     *surface = newSurface;
+    printf("[DEBUG] CreateSurface() SUCCESS\n"); fflush(stdout);
     return DD_OK;
 }
 
@@ -411,10 +434,14 @@ HRESULT SDL2DirectDraw::FlipToGDISurface() {
 }
 
 HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullscreen) {
+    printf("[DEBUG] SDL2DirectDraw::Initialize() START\n"); fflush(stdout);
+
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0) {
+        printf("[ERROR] SDL_Init FAILED!\n"); fflush(stdout);
         return DDERR_GENERIC;
     }
+    printf("[DEBUG] SDL_Init OK\n"); fflush(stdout);
 
     // Create window
     Uint32 windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
@@ -426,18 +453,22 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                              width, height, windowFlags);
     if (!window) {
+        printf("[ERROR] SDL_CreateWindow FAILED!\n"); fflush(stdout);
         SDL_Quit();
         return DDERR_GENERIC;
     }
+    printf("[DEBUG] SDL_CreateWindow OK\n"); fflush(stdout);
 
     // Create renderer
     renderer = SDL_CreateRenderer(window, -1,
                                  SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
+        printf("[ERROR] SDL_CreateRenderer FAILED!\n"); fflush(stdout);
         SDL_DestroyWindow(window);
         SDL_Quit();
         return DDERR_GENERIC;
     }
+    printf("[DEBUG] SDL_CreateRenderer OK\n"); fflush(stdout);
 
     // Store renderer globally for surface operations
     g_SDLRenderer = renderer;
@@ -446,6 +477,7 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     screenHeight = height;
     this->fullscreen = fullscreen;
 
+    printf("[DEBUG] SDL2DirectDraw::Initialize() SUCCESS\n"); fflush(stdout);
     return DD_OK;
 }
 
@@ -454,6 +486,8 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
 // ============================================================================
 
 HRESULT DirectDrawCreateEx(GUID* guid, LPVOID* ddraw, REFIID iid, IUnknown* unkOuter) {
+    printf("[DEBUG] DirectDrawCreateEx() called - SDL2 compat layer\n"); fflush(stdout);
+
     if (!ddraw) return DDERR_GENERIC;
 
     SDL2DirectDraw* dd = new SDL2DirectDraw();
@@ -461,11 +495,13 @@ HRESULT DirectDrawCreateEx(GUID* guid, LPVOID* ddraw, REFIID iid, IUnknown* unkO
     // Initialize with default settings
     HRESULT hr = dd->Initialize(nullptr, 800, 600, false);
     if (FAILED(hr)) {
+        printf("[ERROR] DirectDrawCreateEx() - Initialize FAILED!\n"); fflush(stdout);
         delete dd;
         return hr;
     }
 
     *ddraw = dd;
+    printf("[DEBUG] DirectDrawCreateEx() SUCCESS\n"); fflush(stdout);
     return DD_OK;
 }
 
@@ -474,8 +510,11 @@ HRESULT DirectDrawCreateEx(GUID* guid, LPVOID* ddraw, REFIID iid, IUnknown* unkO
 // ============================================================================
 
 IDirectDrawPalette* DDLoadPalette(IDirectDraw7* dd, LPCSTR bitmapPath) {
+    printf("[DEBUG] DDLoadPalette() called for: %s\n", bitmapPath ? bitmapPath : "(null)"); fflush(stdout);
     // SDL2 doesn't use palettes - return a dummy palette
-    return new SDL2Palette();
+    SDL2Palette* pal = new SDL2Palette();
+    printf("[DEBUG] DDLoadPalette() returning palette: %p\n", pal); fflush(stdout);
+    return pal;
 }
 
 IDirectDrawSurface7* DDLoadBitmap(IDirectDraw7* dd, LPCSTR bitmapPath, int width, int height) {
