@@ -23,7 +23,7 @@ private:
 	int AltDamage,AltSpeed, AltAccuracy;
 	double FireRate, AltFireRate;
 	int Dual,SniperBonus[2];
-	char * Name;
+	const char * Name;  // C++20: stores string literals (const char*)
 	wType wpnType;
 
 
@@ -33,17 +33,17 @@ private:
 
 public:
 
-	Weapon(BulletType Type, int Dmg, int Spd, int Acc, int Clip, double Rate, 
-		   int Delay, int Cost, wType iType, int iLengthUnrotated, int iLengthRotated, 
-		   char * iName, 
-		   BulletType AltType=B_NOBULLET, int AltDmg=0, int AltSpd=0, 
+	Weapon(BulletType Type, int Dmg, int Spd, int Acc, int Clip, double Rate,
+		   int Delay, int Cost, wType iType, int iLengthUnrotated, int iLengthRotated,
+		   const char * iName,  // C++20: string literals are const char*
+		   BulletType AltType=B_NOBULLET, int AltDmg=0, int AltSpd=0,
 		   int AltAcc=0,double AltRate=0);
 
 	~Weapon();
 
 	BOOL ALTERNATIVE();
 
-	char * GetName();
+	const char * GetName();  // C++20: returns const char* (string literal)
 
 	BulletType GetAT(int Alt);
 	int GetDm(int Alt);

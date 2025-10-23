@@ -28,6 +28,9 @@
 #include <fstream>
 #include <math.h>
 #include <wingdi.h>
+
+using namespace std; // For ofstream, ifstream, endl
+
 #include "GameState.h"
 #include "SoundEnum.h"
 #include "SoundPriorityEnum.h"
@@ -187,7 +190,7 @@ Game::UpdateFrame()
 // Name: WindowProc()
 // Desc: The Main Window Procedure
 //-----------------------------------------------------------------------------
-long FAR PASCAL
+LRESULT CALLBACK  // Modern Windows: LRESULT CALLBACK instead of long FAR PASCAL
 WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if(message==WM_DESTROY){
@@ -902,7 +905,8 @@ void Game::DoMagic(){
 
 
 	DBHI(23524);
-	for(Mortal * PresentMortal=TheMortals;PresentMortal;PresentMortal=PresentMortal->nextMortal)
+	Mortal * PresentMortal; // C++20: declare before loops so it's accessible in both
+	for(PresentMortal=TheMortals;PresentMortal;PresentMortal=PresentMortal->nextMortal)
 		if(PresentMortal->GetMType()!=M_PL)
 			PresentMortal->Move();
 
@@ -918,7 +922,7 @@ void Game::DoMagic(){
 	for(Shooter * PresentShooter=TheShooters;PresentShooter;PresentShooter=PresentShooter->nextShooter)
 			PresentShooter->Fire();
 
-	
+
 	DBHI(83484);
 
 	for(Grenade * PresentGrenade=TheGrenades;PresentGrenade;PresentGrenade=PresentGrenade->nextGrenade)
@@ -926,8 +930,8 @@ void Game::DoMagic(){
 
 	DBHI(74578);
 	// Kill shots before deleting the Quadrants
-	KillShots();		
-	
+	KillShots();
+
 	DBHI(62346);
 //	theUfo->Move();
 	for(PresentMortal=TheDeadMortals;PresentMortal;PresentMortal=PresentMortal->nextDeadMortal){
@@ -1071,7 +1075,7 @@ void Game::FreezeScreen(){
 
 	COOL=FALSE;
 	Times[1]+=thisTickCount-StartTime;
-	LoadBitmap(&g_pDDSBackground,BackgroundBitmap);
+	TheGame->LoadBitmapToSurface(&g_pDDSBackground,BackgroundBitmap);  // Use custom function instead of Windows API
 	BlitOnto(&g_pDDSBackground,&g_pDDSPrimary);
 	
 }
@@ -2350,7 +2354,8 @@ void Game::AllocateNewQuadrants(){
 
 	TheShotQuadrants = new shot**[WorldSize*11];
 
-	for ( int i = 0; i < WorldSize*11; i++){
+	int i; // C++20: declare before loops so it's accessible in both
+	for ( i = 0; i < WorldSize*11; i++){
 		TheShotQuadrants[i] = new shot*[WorldSize*11];
 	}
 	TheMortalQuadrants = new Mortal**[WorldSize*11];

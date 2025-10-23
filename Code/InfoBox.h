@@ -41,7 +41,7 @@ public:
 	void SetTemporaryInfoBoxTextFont(HFONT * iTextFont);
 	void SetTemporaryInfoBoxTextAlign(int iTextAlign);
 
-	void Print(int xRel, int yRel, char * text);
+	void Print(int xRel, int yRel, const char * text);  // C++20: string literals are const char*
 	void Print(int xRel, int yRel, int text);
 
 };

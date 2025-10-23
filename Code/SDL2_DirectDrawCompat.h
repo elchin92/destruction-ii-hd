@@ -66,6 +66,13 @@
 #endif
 
 // ============================================================================
+// DirectDraw GUIDs
+// ============================================================================
+
+// IID_IDirectDraw7 - DirectDraw 7 interface GUID
+static const GUID IID_IDirectDraw7 = {0x15e65ec0,0x3b9c,0x11d2,{0xb9,0x2f,0x00,0x60,0x97,0x97,0xea,0x5b}};
+
+// ============================================================================
 // Forward Declarations
 // ============================================================================
 
@@ -265,6 +272,7 @@ struct SDL2Surface {
     HRESULT GetFlipStatus(DWORD flags);
     HRESULT Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags);
     HRESULT GetSurfaceDesc(DDSURFACEDESC2* desc);
+    HRESULT GetAttachedSurface(DDSCAPS2* caps, LPDIRECTDRAWSURFACE7* surface);
 };
 
 // ============================================================================

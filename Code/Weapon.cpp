@@ -32,10 +32,10 @@
 	Weapon * Bazooka;
 
 
-Weapon::Weapon(BulletType Type, int Dmg, int Spd, int Acc, int Clip, double Rate, 
+Weapon::Weapon(BulletType Type, int Dmg, int Spd, int Acc, int Clip, double Rate,
 		   int Delay, int Cost, wType iType, int iLengthUnrotated, int iLengthRotated,
-		   char * iName, 
-		   BulletType AltType, int AltDmg, int AltSpd, 
+		   const char * iName,  // C++20: string literals are const char*
+		   BulletType AltType, int AltDmg, int AltSpd,
 		   int AltAcc,double AltRate){
 
 	AmmoType=Type;
@@ -112,7 +112,7 @@ int Weapon::GetCS(){
 int Weapon::GetPrice(){
 	return Price;
 }
-char * Weapon::GetName(){
+const char * Weapon::GetName(){  // C++20: returns const char*
 	return Name;
 }
 AimType Weapon::GetAimType(){

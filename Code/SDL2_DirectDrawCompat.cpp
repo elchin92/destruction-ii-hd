@@ -242,6 +242,15 @@ HRESULT SDL2Surface::GetSurfaceDesc(DDSURFACEDESC2* desc) {
     return DD_OK;
 }
 
+HRESULT SDL2Surface::GetAttachedSurface(DDSCAPS2* caps, LPDIRECTDRAWSURFACE7* surface) {
+    // In SDL2, we don't have true attached surfaces like DirectDraw
+    // This method is typically called to get backbuffer from primary surface
+    // For now, return error - backbuffer access is handled differently in SDL2
+    if (!surface) return DDERR_INVALIDPARAMS;
+    *surface = nullptr;
+    return DDERR_GENERIC; // Not supported - use primary surface directly
+}
+
 // ============================================================================
 // SDL2Palette Implementation
 // ============================================================================

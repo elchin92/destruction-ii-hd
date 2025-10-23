@@ -23,6 +23,9 @@
 #include "Save.h"
 
 #include <fstream>
+#include <shellapi.h> // For ShellExecute
+
+using namespace std; // For ofstream, ifstream, endl
 
 
 
@@ -382,12 +385,12 @@ void Game::Reset(){
 	CheatKeys[cMight][y++]=DIK_C;
 	CheatKeys[cMight][y++]=-1;
 
-	CheatFunctions[cPacman]=ActivatePacman;
-	CheatFunctions[cPrey]=ActivatePrey;
-	CheatFunctions[cBoom]=ActivateBoom;
-	CheatFunctions[cRocket]=ActivateRocket;
-	CheatFunctions[cSpeed]=ActivateSpeed;
-	CheatFunctions[cMight]=ActivateMight;
+	CheatFunctions[cPacman]=&Game::ActivatePacman; // C++20: explicit member pointer syntax
+	CheatFunctions[cPrey]=&Game::ActivatePrey;
+	CheatFunctions[cBoom]=&Game::ActivateBoom;
+	CheatFunctions[cRocket]=&Game::ActivateRocket;
+	CheatFunctions[cSpeed]=&Game::ActivateSpeed;
+	CheatFunctions[cMight]=&Game::ActivateMight;
 
 	Zero(CheatLevel,NoOfCheats);
 	CheatActive=0;
