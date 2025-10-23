@@ -393,16 +393,6 @@ struct DIDEVICEINSTANCE {
     WORD    wUsage;
 };
 
-// Data format
-struct DIDATAFORMAT {
-    DWORD   dwSize;
-    DWORD   dwObjSize;
-    DWORD   dwFlags;
-    DWORD   dwDataSize;
-    DWORD   dwNumObjs;
-    LPVOID  rgodf;
-};
-
 // Enum devices callback
 typedef BOOL (CALLBACK *LPDIENUMDEVICESCALLBACK)(const DIDEVICEINSTANCE*, LPVOID);
 
