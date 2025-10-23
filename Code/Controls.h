@@ -15,7 +15,7 @@ static char	 KeyNames[INGAMEKEYS][30]= {"Go North","Go South","Go West","Go East
 
 
 #ifndef DIK_PAUSE
-#include "dinput.h"
+#include "SDL2_DirectInputCompat.h"
 #endif
 
 class Game;

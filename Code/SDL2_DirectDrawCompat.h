@@ -22,6 +22,12 @@
 #include <vector>
 #include <unordered_map>
 #include <windows.h> // For HRESULT, RECT, COLORREF, etc.
+#include <unknwn.h>  // For IUnknown
+
+// Prevent inclusion of real DirectDraw headers - we're replacing it!
+#ifndef _DDRAW_H
+#define _DDRAW_H
+#endif
 
 // ============================================================================
 // DirectDraw HRESULT Codes (Minimal Set)
@@ -79,6 +85,12 @@ struct DDSURFACEDESC2 {
     LPVOID      lpSurface;  // Locked surface pointer
 };
 
+// Color key structure (must be defined before DDBLTFX)
+struct DDCOLORKEY {
+    DWORD       dwColorSpaceLowValue;
+    DWORD       dwColorSpaceHighValue;
+};
+
 // Blit FX structure (for special blitting effects)
 struct DDBLTFX {
     DWORD       dwSize;
@@ -123,11 +135,7 @@ struct DDBLTFX {
     DDCOLORKEY  ddckSrcColorkey;
 };
 
-// Color key structure
-struct DDCOLORKEY {
-    DWORD       dwColorSpaceLowValue;
-    DWORD       dwColorSpaceHighValue;
-};
+// (DDCOLORKEY already defined above before DDBLTFX)
 
 // ============================================================================
 // SDL2Surface - DirectDrawSurface7 Wrapper

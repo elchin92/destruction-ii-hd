@@ -153,12 +153,6 @@ If you want to help or just share your memories of the game:
 
 **Made with love and memories**
 
-**In memory of my cousin**
-
-*1985-2023*
-
-🕊️
-
 </div>
 
 ---

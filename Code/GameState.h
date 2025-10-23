@@ -1,4 +1,4 @@
-#include "ddraw.h"
+#include "SDL2_DirectDrawCompat.h"
 
 #ifndef __GameState__ 
 #define __GameState__

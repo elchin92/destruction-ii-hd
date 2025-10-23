@@ -1,5 +1,5 @@
 #include <wtypes.h>
-#include <dsound.h>
+#include "SDL2_DirectSoundCompat.h"
 
 BOOL AppCreateBasicBuffer( 
 		LPDIRECTSOUND lpDirectSound, 

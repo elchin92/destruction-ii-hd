@@ -1,5 +1,5 @@
 #include "Menu.h"
-#include "ddraw.h"
+#include "SDL2_DirectDrawCompat.h"
 #ifndef __GraphicMenu__
 #define __GraphicMenu__
 

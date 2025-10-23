@@ -4,7 +4,7 @@
 #include "SoundEnum.h"
 #include "SoundPriorityEnum.h"
 #include "wavread.h"
-#include <dsound.h>
+#include "SDL2_DirectSoundCompat.h"
 #define BREAKDIST	dFar
 #define BREAKPRI	spLow
 #define WallSound();	CreateAndPlaySound(sWallDown, BREAKDIST, BREAKPRI);

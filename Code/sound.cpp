@@ -1,6 +1,6 @@
 #include <windows.h>
 #include <mmreg.h>
-#include <dsound.h>
+#include "SDL2_DirectSoundCompat.h"
 
 
 BOOL AppCreateBasicBuffer( 

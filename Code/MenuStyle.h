@@ -1,7 +1,6 @@
 #include <windows.h>
-DECLARE_HANDLE(HPEN);
-DECLARE_HANDLE(HFONT);
-DECLARE_HANDLE(HBRUSH);
+// DECLARE_HANDLE удалены - они уже объявлены в windef.h (часть Windows SDK)
+// Это исправляет ошибку C2011: переопределение типов HPEN__, HFONT__, HBRUSH__
 
 
 

@@ -44,9 +44,6 @@ if(MSVC)
         /utf-8              # UTF-8 source and execution charset
         /EHsc               # Exception handling
         /nologo             # Suppress startup banner
-        /FI"${CMAKE_SOURCE_DIR}/Code/SDL2_DirectDrawCompat.h"  # Force include SDL2 compat layer
-        /FI"${CMAKE_SOURCE_DIR}/Code/SDL2_DirectInputCompat.h"  # Force include SDL2 compat layer
-        /FI"${CMAKE_SOURCE_DIR}/Code/SDL2_DirectSoundCompat.h"  # Force include SDL2 compat layer
     )
 
     # Release optimizations
@@ -144,10 +141,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 # Preprocessor definitions
-# __DIGITALRIVERRELEASE__ уже определён в Code/Definitions.h
-# target_compile_definitions(${PROJECT_NAME} PRIVATE
-#     # DirectX compatibility layer definitions can be added here if needed
-# )
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    __DIGITALRIVERRELEASE__=1
+    # DirectX compatibility layer will be added here
+)
 
 # ============================================================================
 # Resource Files (Copy to build directory)

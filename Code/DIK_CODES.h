@@ -6,7 +6,7 @@
 extern char						DikName[MaxKeys][17];
 extern char						DikCharName[MaxKeys];
 
-char * DIK2STR(int CharCode);
+const char * DIK2STR(int CharCode);  // const char* для C++20 совместимости
 int CharNameAvailable(int CharCode);
 char DIK2ASCII(int CharCode);
 

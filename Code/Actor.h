@@ -6,7 +6,7 @@
 #define SPos(xy) (((Pos[xy]+ActualCenterPos)/32)*32)
 
 
-#include "ddraw.h"
+#include "SDL2_DirectDrawCompat.h"
 #include "SoundSource.h"
 
 class Game;

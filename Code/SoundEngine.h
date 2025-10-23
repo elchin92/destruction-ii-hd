@@ -1,4 +1,4 @@
-#include <dsound.h>
+#include "SDL2_DirectSoundCompat.h"
 #include "wavread.h"
 #include "SoundEnum.h"
 #include "SoundPriorityEnum.h"

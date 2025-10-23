@@ -6,7 +6,7 @@
 char						DikName[MaxKeys][17];
 char						DikCharName[MaxKeys];
 
-char * DIK2STR(int CharCode){
+const char * DIK2STR(int CharCode){  // const char* для C++20 совместимости
 
 	Beacon(523444);
 	DP2("baba",CharCode);
@@ -115,7 +115,7 @@ void SetDikNames(){
 	sprintf(DikName[40]
 		,"'");
 	sprintf(DikName[41]
-		,"�");
+		,"�");
 	sprintf(DikName[42]
 		,"LEFT SHIFT");
 	sprintf(DikName[43]
@@ -437,7 +437,7 @@ void SetDikNames(){
 	DikCharName[40]
 		='\'';
 	DikCharName[41]
-		='�';
+		='�';
 	DikCharName[44]
 		='Z';
 	DikCharName[45]
