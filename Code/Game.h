@@ -293,7 +293,7 @@ public:
 	void AddShot(int LeftRightShot, double SpeedOrColor, double AccOrAngle, BulletType bType, int Damage, int Alt, Shooter * Firerer);
 	void Shoot(int Ammo, int x, int y);
 	void ErrorReport(int Error);
-	void UserMessage(char * title, char * msg, int mboxandquit=TRUE);
+	void UserMessage(const char * title, char * msg, int mboxandquit=TRUE);
 	void AddFX();
 	void Focus();
 	void SetCamera();

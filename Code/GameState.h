@@ -96,8 +96,8 @@ public:
 	virtual COLORREF GetBlack();
 
 	
-	void Message(char * iMsg1, char * iMsg2, COLORREF iColor);
-	void Message(char * iMsg, COLORREF iColor);
+	void Message(const char * iMsg1, const char * iMsg2, COLORREF iColor);
+	void Message(const char * iMsg, COLORREF iColor);
 
 
 };

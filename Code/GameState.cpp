@@ -249,12 +249,12 @@ void GameState::CreateWideScreenUserMsgBox(){
 	UserMsgBox = new InfoBox(32,550, 383, 30, &MsgFont, mcWhite,TA_CENTER);
 
 }
-void GameState::Message(char * iMsg1, char * iMsg2, COLORREF iColor){
+void GameState::Message(const char * iMsg1, const char * iMsg2, COLORREF iColor){
 	char oMsg[200];
 	sprintf(oMsg,"%s%s",iMsg1,iMsg2);
 	Message(oMsg,iColor);
 }
-void GameState::Message(char * iMsg, COLORREF iColor){
+void GameState::Message(const char * iMsg, COLORREF iColor){
 	strcpy(Msg,iMsg);
 	iMessage(iColor);
 }
