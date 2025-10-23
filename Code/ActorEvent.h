@@ -17,7 +17,7 @@ public:
 	ActorEvent(int iMP, Actor * iMover, Actor * iCollided, int Secondary=0);
 	~ActorEvent();
 
-	void KamikazeEvent();
+	int KamikazeEvent();
 	void Act();
 
 };
