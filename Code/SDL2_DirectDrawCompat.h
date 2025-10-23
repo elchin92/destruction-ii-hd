@@ -91,7 +91,65 @@ typedef SDL2Palette*        LPDIRECTDRAWPALETTE;
 // DirectDraw Structures
 // ============================================================================
 
-// Surface description (simplified)
+// Surface caps structure
+struct DDSCAPS2 {
+    DWORD       dwCaps;
+    DWORD       dwCaps2;
+    DWORD       dwCaps3;
+    union {
+        DWORD   dwCaps4;
+        DWORD   dwVolumeDepth;
+    };
+};
+
+// Pixel format structure
+struct DDPIXELFORMAT {
+    DWORD       dwSize;
+    DWORD       dwFlags;
+    DWORD       dwFourCC;
+    union {
+        DWORD   dwRGBBitCount;
+        DWORD   dwYUVBitCount;
+        DWORD   dwZBufferBitDepth;
+        DWORD   dwAlphaBitDepth;
+        DWORD   dwLuminanceBitCount;
+        DWORD   dwBumpBitCount;
+        DWORD   dwPrivateFormatBitCount;
+    };
+    union {
+        DWORD   dwRBitMask;
+        DWORD   dwYBitMask;
+        DWORD   dwStencilBitDepth;
+        DWORD   dwLuminanceBitMask;
+        DWORD   dwBumpDuBitMask;
+        DWORD   dwOperations;
+    };
+    union {
+        DWORD   dwGBitMask;
+        DWORD   dwUBitMask;
+        DWORD   dwZBitMask;
+        DWORD   dwBumpDvBitMask;
+        struct {
+            WORD wFlipMSTypes;
+            WORD wBltMSTypes;
+        } MultiSampleCaps;
+    };
+    union {
+        DWORD   dwBBitMask;
+        DWORD   dwVBitMask;
+        DWORD   dwStencilBitMask;
+        DWORD   dwBumpLuminanceBitMask;
+    };
+    union {
+        DWORD   dwRGBAlphaBitMask;
+        DWORD   dwYUVAlphaBitMask;
+        DWORD   dwLuminanceAlphaBitMask;
+        DWORD   dwRGBZBitMask;
+        DWORD   dwYUVZBitMask;
+    };
+};
+
+// Surface description (extended for ddutil.cpp compatibility)
 struct DDSURFACEDESC2 {
     DWORD       dwSize;
     DWORD       dwFlags;
@@ -103,6 +161,8 @@ struct DDSURFACEDESC2 {
     };
     DWORD       dwBackBufferCount;
     LPVOID      lpSurface;  // Locked surface pointer
+    DDPIXELFORMAT ddpfPixelFormat;  // Pixel format
+    DDSCAPS2    ddsCaps;            // Surface caps
 };
 
 // Color key structure (must be defined before DDBLTFX)
@@ -204,6 +264,7 @@ struct SDL2Surface {
     HRESULT Restore();
     HRESULT GetFlipStatus(DWORD flags);
     HRESULT Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags);
+    HRESULT GetSurfaceDesc(DDSURFACEDESC2* desc);
 };
 
 // ============================================================================
@@ -272,6 +333,7 @@ struct SDL2DirectDraw {
     HRESULT SetCooperativeLevel(HWND hwnd, DWORD flags);
     HRESULT SetDisplayMode(DWORD width, DWORD height, DWORD bpp, DWORD refreshRate, DWORD flags);
     HRESULT CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7* surface, void* unkOuter);
+    HRESULT CreatePalette(DWORD flags, PALETTEENTRY* entries, LPDIRECTDRAWPALETTE* palette, void* unkOuter);
     HRESULT RestoreDisplayMode();
     HRESULT FlipToGDISurface();
     HRESULT TestCooperativeLevel() {
@@ -320,6 +382,9 @@ HRESULT DDSetColorKey(IDirectDrawSurface7* surface, COLORREF rgb);
 #define DDSCAPS_COMPLEX                 0x00000008
 #define DDSCAPS_FLIP                    0x00000010
 #define DDSCAPS_OFFSCREENPLAIN          0x00000040
+
+// Palette caps
+#define DDPCAPS_8BIT                    0x00000004
 
 // Blit flags
 #define DDBLT_WAIT                      0x01000000

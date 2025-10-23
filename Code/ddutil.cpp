@@ -23,8 +23,7 @@
 // Name: DDCopyBitmap()
 // Desc: Draw a bitmap into a DirectDrawSurface
 //-----------------------------------------------------------------------------
-extern "C" HRESULT
-DDCopyBitmap(IDirectDrawSurface7 * pdds, HBITMAP hbm, int x, int y,
+HRESULT DDCopyBitmap(IDirectDrawSurface7 * pdds, HBITMAP hbm, int x, int y,
              int dx, int dy)
 {
     HDC                     hdcImage;
@@ -74,8 +73,7 @@ DDCopyBitmap(IDirectDrawSurface7 * pdds, HBITMAP hbm, int x, int y,
 // Name: DDLoadBitmap()
 // Desc: Create a DirectDrawSurface from a bitmap resource.
 //-----------------------------------------------------------------------------
-extern "C" IDirectDrawSurface7 *
-DDLoadBitmap(IDirectDraw7 * pdd, LPCSTR szBitmap, int dx, int dy)
+IDirectDrawSurface7 * DDLoadBitmap(IDirectDraw7 * pdd, LPCSTR szBitmap, int dx, int dy)
 {
     HBITMAP                 hbm;
     BITMAP                  bm;
@@ -120,8 +118,7 @@ DDLoadBitmap(IDirectDraw7 * pdd, LPCSTR szBitmap, int dx, int dy)
 // Desc: Load a bitmap from a file or resource into a directdraw surface.
 //       normaly used to re-load a surface after a restore.
 //-----------------------------------------------------------------------------
-extern "C" HRESULT
-DDReLoadBitmap(IDirectDrawSurface7 * pdds, LPCSTR szBitmap)
+HRESULT DDReLoadBitmap(IDirectDrawSurface7 * pdds, LPCSTR szBitmap)
 {
     HBITMAP                 hbm;
     HRESULT                 hr;
@@ -160,8 +157,7 @@ DDReLoadBitmap(IDirectDrawSurface7 * pdds, LPCSTR szBitmap)
 //       if the resource does not exist or NULL is passed create a
 //       default 332 palette.
 //-----------------------------------------------------------------------------
-extern "C" IDirectDrawPalette *
-DDLoadPalette(IDirectDraw7 * pdd, LPCSTR szBitmap)
+IDirectDrawPalette * DDLoadPalette(IDirectDraw7 * pdd, LPCSTR szBitmap)
 {
     IDirectDrawPalette     *ddpal;
     int                     i;
@@ -254,8 +250,7 @@ DDLoadPalette(IDirectDraw7 * pdd, LPCSTR szBitmap)
 //       We do this by leting GDI SetPixel() do the color matching
 //       then we lock the memory and see what it got mapped to.
 //-----------------------------------------------------------------------------
-extern "C" DWORD
-DDColorMatch(IDirectDrawSurface7 * pdds, COLORREF rgb)
+DWORD DDColorMatch(IDirectDrawSurface7 * pdds, COLORREF rgb)
 {
     COLORREF                rgbT;
     HDC                     hdc;
@@ -305,8 +300,7 @@ DDColorMatch(IDirectDrawSurface7 * pdds, COLORREF rgb)
 //       If you pass CLR_INVALID as the color key, the pixel
 //       in the upper-left corner will be used.
 //-----------------------------------------------------------------------------
-extern "C" HRESULT
-DDSetColorKey(IDirectDrawSurface7 * pdds, COLORREF rgb)
+HRESULT DDSetColorKey(IDirectDrawSurface7 * pdds, COLORREF rgb)
 {
     DDCOLORKEY              ddck;
 

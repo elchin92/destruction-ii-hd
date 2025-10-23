@@ -434,7 +434,7 @@ void Settings::LoadSettings(){
 	ifstream File(SettingsFileName, ios::binary | ios::in); // C++20: ios::nocreate removed
 	BYTE KeyLength=0;
 	char tTopic[100];
-	File.read(&KeyLength, 1);
+	File.read(reinterpret_cast<char*>(&KeyLength), 1); // C++20: explicit cast needed
 	File.read(tTopic,KeyLength);
 	tTopic[KeyLength]='\0';
 	if(!KeyLength||!TopicCheck(tTopic)){

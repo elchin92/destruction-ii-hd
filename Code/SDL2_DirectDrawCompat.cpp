@@ -221,6 +221,27 @@ HRESULT SDL2Surface::Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags) {
     return DD_OK;
 }
 
+HRESULT SDL2Surface::GetSurfaceDesc(DDSURFACEDESC2* desc) {
+    if (!desc) return DDERR_INVALIDPARAMS;
+
+    // Fill in basic surface info
+    desc->dwSize = sizeof(DDSURFACEDESC2);
+    desc->dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_PITCH;
+    desc->dwWidth = width;
+    desc->dwHeight = height;
+    desc->lPitch = width * 4; // Assume 32-bit RGBA
+
+    // Fill in pixel format (32-bit RGBA)
+    desc->ddpfPixelFormat.dwSize = sizeof(DDPIXELFORMAT);
+    desc->ddpfPixelFormat.dwRGBBitCount = 32;
+    desc->ddpfPixelFormat.dwRBitMask = 0x00FF0000;
+    desc->ddpfPixelFormat.dwGBitMask = 0x0000FF00;
+    desc->ddpfPixelFormat.dwBBitMask = 0x000000FF;
+    desc->ddpfPixelFormat.dwRGBAlphaBitMask = 0xFF000000;
+
+    return DD_OK;
+}
+
 // ============================================================================
 // SDL2Palette Implementation
 // ============================================================================
@@ -324,6 +345,23 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
     }
 
     *surface = newSurface;
+    return DD_OK;
+}
+
+HRESULT SDL2DirectDraw::CreatePalette(DWORD flags, PALETTEENTRY* entries, LPDIRECTDRAWPALETTE* palette, void* unkOuter) {
+    if (!palette) return DDERR_INVALIDPARAMS;
+
+    // Create new palette object
+    SDL2Palette* newPalette = new SDL2Palette();
+
+    // Copy palette entries if provided
+    if (entries) {
+        for (int i = 0; i < 256; i++) {
+            newPalette->entries[i] = entries[i];
+        }
+    }
+
+    *palette = newPalette;
     return DD_OK;
 }
 
