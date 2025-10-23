@@ -787,7 +787,7 @@ void Game::SetVariables(){
 	FOCUSLOST=FALSE;
 }
 
-void Game::UserMessage(const char * title, char * msg, int mboxandquit){
+void Game::UserMessage(const char * title, const char * msg, int mboxandquit){
 	Beacon(666);
 	ofstream File("DebugOutput.txt");
 	File << title << endl << msg << endl ;

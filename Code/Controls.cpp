@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <fstream>
 
+using namespace std;
+
 Controls * TheControls;
 
 
