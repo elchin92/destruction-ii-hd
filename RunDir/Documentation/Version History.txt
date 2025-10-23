@@ -1,0 +1,59 @@
+Destruction I version 1.00, Released 2001-04-29
+ 
+  Only one minor bug was ever found in Destruction I so no 1.01 version was ever made.
+  Destruction I became quite popular and got about 50,000 direct downloads. It was
+  available on many cover and shareware cds which probably reached many more people
+  than through direct downloads. The full version costed $10 and it allowed you to
+  play an unlimited number of rounds (instead of 5), change the worldsize and start
+  with money. The game didn't sell well at all, probably since it was too playable
+  in it's unregistered form and because too little marketing efforts were made.
+  The game was released under the name of ThorpeSoft which has been changed to 
+  Nocturnal Development.
+ 
+  Code, graphics and sound: Johan Torp 
+  Web site: Johan Torp
+  
+  
+Destruction II
+ 
+  Development began in the summer of 2001. It originally was meant to be finished
+  by the end of that summer. It was completed 1½ years after the initial time frame.
+  By the end of the next year's summer it began too look like something. A number
+  of alpha versions were released to the licensed users during the fall. They didn't
+  provide some features, like multiplayer, load/save possibility, proper statistics,
+  special effects (scchhh, they're a secret) and some other things.
+ 
+ Alpha versions
+ 
+  Alpha 100, Released 2002-10-07
+    The first alpha version contained alot of bugs and was hardly playable.
+    
+  Alpha 101, Released 2002-10-07  
+    Was released later the same day and fixed some installation problems in Alpha 100.
+ 
+  Alpha 102, Released 2002-10-11  
+    Fixed about 50(!) bugs in Alpha 101. Proved to be quite playable.
+    
+  Alpha 103, Released 2002-10-22
+    Fixed a lot of bugs from Alpha 102, maybe 50 this time too. 
+    This version also contained the new shop interface.
+    
+  Alpha 103.1, Released 2002-10-22
+    A major bug which occured after having played one round caused the shop to be
+    unusable. This called for a re-release the next day.
+    
+   The final Alpha contained some minor bugs but there were still lots of new
+   features which needed implemented so after waiting a few days for bug reports
+   work began on the first beta version.
+
+
+Beta Versions
+
+Three beta versions were released on (18/12 2002, 21/12 2002 and 13/1 2003). 
+The first two were only released to licensed users but the third one was available to the public. 
+Shortly after the last version was released, the first official version (1.00) was released.
+
+
+1.00, released 2003-01-20
+
+This is the newest version released. No new versions will be released until the end of summer 2003.

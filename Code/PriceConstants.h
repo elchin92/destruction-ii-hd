@@ -1,0 +1,1 @@
+const int	PlayerPrice=500,	RoundPrice=5000,	LifePrice=1500,		ChPenalty = 500;

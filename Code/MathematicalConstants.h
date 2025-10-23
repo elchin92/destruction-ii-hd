@@ -1,0 +1,4 @@
+const double				pi=3.1415926535897932384626433832795;
+const double				invg[2] = {3,2}; // Missile, grenade
+const double				sq2 = 1.4142135623730950488016887242097;
+const double				isq2 = 0.70710678118654752440084436210485;

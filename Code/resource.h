@@ -1,0 +1,9 @@
+#define IDI_MAIN_ICON                   101
+#define IDR_MENU                        102
+#define IDM_EXIT                        40001
+#define IDC_PLAY                        1000
+#define IDC_STOP                        1001
+#define IDC_LOOP_CHECK                  1009
+#define IDC_SOUNDFILE                   1011
+#define IDC_FILENAME                    1015
+#define IDC_AUDIO						1083

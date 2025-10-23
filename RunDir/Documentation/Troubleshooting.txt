@@ -1,0 +1,63 @@
+----------------------------------------------------------------------------------------------
+ Troubleshooting Destruction II
+----------------------------------------------------------------------------------------------
+
+When I try to start the game I get a message saying that "dinput.dll" is missing.
+
+  You don't have DirectX properly installed. Destruction II requires at least DirectX 7.0a
+  even though I recommend you to install the latest version of DirectX. DirectX can be found
+  on most full game cd, most magazine cover cds or it can be download from 
+   http://www.microsoft.com/windows/directx/downloads/default.asp.
+  Since DirectX is quite big (about 10 mb), I recommend trying to find a cd which contains it
+  rather than downloading it if you don't have a fast internet connection.
+
+-----
+
+I am having trouble controlling the game. Sometimes the keys doesn't respond.
+
+ If single keystrokes are lost without other keys being pressed down your computer is probably
+ too slow for Destruction II. Please send your system specifications (operating system, 
+ processor, graphics card & RAM) to support@destruction.nu. If the problem only appear when
+ several keys are pressed, read the solution below.
+
+ This is, I'm afraid, a hardware limitation. The standard keyboard communicates with the PC
+ in a rather complicated way. By pressing two keys you sometime rule out the possibility to
+ press a few others. I have not found anyway around this problem. By choosing
+ new keys, new problems will occur. By using the default keyset only a few minor problems will
+ occur. It is the best combination found so far. I you have a better one, please tell send
+ a mail about it.
+  A solution is of course to use a joystick. Make sure to get one with at least 10 buttons +
+ movement keys. Destruction II supports up to two joysticks though most joysticks can only
+ be used one at a time (this is a hardware/Windows limitation).
+ Another possible solution is to use keys which aren't organized like the 
+ arrow keys (.:.) for instance ESCF (instead of ESDF). To use the default keyset, delete 
+ or rename the "Data\keys.config" file and replace it with a copy of "Data\default.config"
+ which you rename to "Data\keys.config".
+
+-----
+
+The game flickers something enormeously.
+
+ You have to enable DirectX's framesync somehow. How you enable this varies from videocard
+ to videocard and from driver to driver. You are supposed to look for some option which is 
+ DirectX or Direct3D (aka D3D) related. 
+ On the videocard used to make Destruction, a Voodoo 3 3000, you enable framesync by 
+ rightclicking on the desktop and then selecting 
+ Properties->[Settings Tab]->Advanced->3dfx Advanced features->Direct3D->%Speed%
+ and selecting %Normal2% instead of %Fastest%. It is not always very easy to find this
+ option if you are unexperienced. You are on the other hand not very likely to run into this
+ problem if you haven't played around with a the options. 
+ Try consulting your videocard manufacturer or try searching the internet for a solution.
+ If you suceed in solving this problem and have another video card than Voodoo 3, please
+ send an email to support@destruction.nu and your solution will be added to this guide.
+
+-----
+
+The players break up, appear on eachothers screens and seem to get stuck inside walls.
+
+ This is a bug I never managed to solve. Please send an email to the address found below and 
+ describe what graphics card, processor, RAM, operating system, joysticks & keyboard you are
+ using. If you can help me to fix this bug you will be awarded a free license!
+
+
+If you have any other problems, send an email to support@destruction.nu

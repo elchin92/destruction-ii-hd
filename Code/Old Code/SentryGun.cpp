@@ -1,0 +1,29 @@
+// SentryGun.cpp: implementation of the SentryGun class.
+//
+//////////////////////////////////////////////////////////////////////
+
+
+#include "SentryGun.h"
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+
+SentryGun::SentryGun(int X, int Y, Player * iOwner)
+{
+	Pos[0]=X;
+	Pos[1]=Y;
+	Owner=iOwner;
+	Mortal::Initialize();
+	MType=M_SG;
+}
+
+SentryGun::~SentryGun()
+{
+
+}
+
+SentryGun::Move(){
+	Lock();
+}
+
