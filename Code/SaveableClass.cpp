@@ -8,8 +8,8 @@
 #include "definitions.h"
 #include "Debugger.h"
 #include <fstream>
-using std::ifstream;
-using std::ofstream;
+
+using namespace std;
 
 SaveableClass * TheSaveableClasses;
 //////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ void SaveableClass::SaveClass(ofstream * savefile){
 	DP("Saving a class...");
 	DP(Topic);
 	BYTE NameLength = (BYTE)strlen(Topic);
-	savefile->write(&NameLength,1);
+	savefile->write(reinterpret_cast<char*>(&NameLength),1);
 	savefile->write(Topic,NameLength);
 	CheckSum=rand();
 	savefile->write((char *)&CheckSum,sizeof(CheckSum));

@@ -1,8 +1,8 @@
-#ifndef __SaveableClass__ 
+#ifndef __SaveableClass__
 #define __SaveableClass__
 
-class ofstream;
-class ifstream;
+#include <fstream>
+
 class SaveableItem;
 
 class SaveableClass
@@ -34,8 +34,8 @@ public:
 	// RegisterItem("TenElemArray",&teArray[0], sizeof(teArray[0])*10);
 	void RegisterItem(const char * ItemName, void * Data, int sizeofData);
 
-	int LoadClass(ifstream * savefile, int PerformLoad);
-	void SaveClass(ofstream * savefile);
+	int LoadClass(std::ifstream * savefile, int PerformLoad);
+	void SaveClass(std::ofstream * savefile);
 
 	void ReportData(unsigned char Data);
 
