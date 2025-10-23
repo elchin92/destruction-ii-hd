@@ -65,6 +65,49 @@
 #define DIDFT_BUTTON                   0x0000000C
 #define DIDFT_AXIS                     0x00000003
 
+// Enumeration callback return values
+#define DIENUM_CONTINUE                1
+#define DIENUM_STOP                    0
+
+// DirectInput version
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION            0x0800
+#endif
+
+// Property constants
+#define DIPROP_RANGE                   ((REFGUID)1)
+
+// Property header flags
+#define DIPH_BYOFFSET                  2
+
+// GUIDs for device interfaces
+static const GUID IID_IDirectInputDevice2 = {0, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
+
+// Windows constant (for GetWindowLong)
+#ifndef GWLP_HINSTANCE
+#define GWLP_HINSTANCE                 (-6)
+#endif
+#ifndef GWL_HINSTANCE
+#define GWL_HINSTANCE                  GWLP_HINSTANCE
+#endif
+
+// ============================================================================
+// DirectInput Property Structures
+// ============================================================================
+
+typedef struct DIPROPHEADER {
+    DWORD dwSize;
+    DWORD dwHeaderSize;
+    DWORD dwObj;
+    DWORD dwHow;
+} DIPROPHEADER, *LPDIPROPHEADER;
+
+typedef struct DIPROPRANGE {
+    DIPROPHEADER diph;
+    LONG lMin;
+    LONG lMax;
+} DIPROPRANGE, *LPDIPROPRANGE;
+
 // ============================================================================
 // DirectInput Keyboard Scan Codes (DIK_*)
 // Map these to SDL_Scancode
@@ -339,6 +382,16 @@ struct SDL2InputDevice {
     HRESULT Unacquire();
     HRESULT GetDeviceState(DWORD size, LPVOID data);
     HRESULT Poll();
+    HRESULT SetProperty(REFGUID rguidProp, LPCDIPROPHEADER pdiph) {
+        // Property setting stub - SDL doesn't require property configuration
+        // Just return success to keep original code happy
+        return DI_OK;
+    }
+    HRESULT EnumObjects(LPDIENUMDEVICEOBJECTSCALLBACK lpCallback, LPVOID pvRef, DWORD dwFlags) {
+        // Enumerate device objects stub - for joystick axis enumeration
+        // Return success - actual enumeration implementation would go here
+        return DI_OK;
+    }
     HRESULT GetCapabilities(DIDEVCAPS* caps);
 };
 
@@ -379,6 +432,10 @@ struct SDL2DirectInput {
 
     // DirectInput methods
     HRESULT CreateDevice(REFGUID rguid, LPDIRECTINPUTDEVICE* device, IUnknown* unkOuter);
+    HRESULT CreateDeviceEx(REFGUID rguid, REFIID riid, LPVOID* device, IUnknown* unkOuter) {
+        // CreateDeviceEx is just an extended version of CreateDevice
+        return CreateDevice(rguid, (LPDIRECTINPUTDEVICE*)device, unkOuter);
+    }
     HRESULT EnumDevices(DWORD devType, LPDIENUMDEVICESCALLBACK callback, LPVOID ref, DWORD flags);
     HRESULT Initialize(HINSTANCE inst, DWORD version);
 };
