@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <io.h>
 #include <fstream>
-using std::ifstream;
+
+using namespace std;
+
 #include "Debugger.h"
 #include "GameKeeper.h"
 #include "Start.h"
@@ -62,15 +64,12 @@ int Load::GetData(int which){
 	char FileName[41];
 
 	sprintf(FileName,"Save\\Save%i.DSG",which);
-	ifstream File(FileName, ios::nocreate, filebuf::openprot );
-
-
-	File.setmode( filebuf::binary );
-
+	ifstream File(FileName, ios::binary);
+	// Modern C++: ios::binary replaces ios::nocreate | filebuf::openprot | setmode
 
 	char TempName[41];
 	BYTE KeyLength=0;
-	File.read(&KeyLength, 1);
+	File.read(reinterpret_cast<char*>(&KeyLength), 1);
 	File.read(TempName,KeyLength);
 	TempName[KeyLength]='\0';
 
@@ -103,9 +102,8 @@ int Load::GetData(int which){
 
 	DP("Test load OK!");
 
-	File.open(FileName);
-	File.setmode( filebuf::binary );
-	File.read(&KeyLength, 1);
+	File.open(FileName, ios::binary);
+	File.read(reinterpret_cast<char*>(&KeyLength), 1);
 	File.read(TempName,KeyLength);
 	TempName[KeyLength]='\0';
 
