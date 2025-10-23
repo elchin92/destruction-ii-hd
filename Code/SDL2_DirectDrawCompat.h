@@ -237,12 +237,16 @@ struct SDL2Surface {
     bool            colorKeyEnabled;
     bool            isLocked;
 
+    // Attached surfaces (for backbuffer)
+    SDL2Surface*    attachedBackBuffer;
+
     // RefCounting for COM-like interface
     int             refCount;
 
     SDL2Surface(SDL_Texture* tex, int w, int h)
         : texture(tex), surface(nullptr), width(w), height(h),
-          colorKey(0), colorKeyEnabled(false), isLocked(false), refCount(1) {}
+          colorKey(0), colorKeyEnabled(false), isLocked(false),
+          attachedBackBuffer(nullptr), refCount(1) {}
 
     ~SDL2Surface() {
         if (texture) SDL_DestroyTexture(texture);

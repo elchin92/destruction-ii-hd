@@ -249,12 +249,23 @@ HRESULT SDL2Surface::GetSurfaceDesc(DDSURFACEDESC2* desc) {
 }
 
 HRESULT SDL2Surface::GetAttachedSurface(DDSCAPS2* caps, LPDIRECTDRAWSURFACE7* surface) {
-    // In SDL2, we don't have true attached surfaces like DirectDraw
-    // This method is typically called to get backbuffer from primary surface
-    // For now, return error - backbuffer access is handled differently in SDL2
-    if (!surface) return DDERR_INVALIDPARAMS;
+    if (!surface || !caps) return DDERR_INVALIDPARAMS;
+
+    // Check if requesting backbuffer
+    if (caps->dwCaps & DDSCAPS_BACKBUFFER) {
+        if (attachedBackBuffer) {
+            *surface = attachedBackBuffer;
+            return DD_OK;
+        } else {
+            // No backbuffer attached
+            *surface = nullptr;
+            return DDERR_GENERIC;
+        }
+    }
+
+    // Other surface types not supported
     *surface = nullptr;
-    return DDERR_GENERIC; // Not supported - use primary surface directly
+    return DDERR_GENERIC;
 }
 
 // ============================================================================
@@ -343,17 +354,22 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
 
     // Handle primary surface with back buffer
     if (desc->dwFlags & DDSD_CAPS) {
-        if (desc->dwFlags & DDSCAPS_PRIMARYSURFACE) {
+        if (desc->ddsCaps.dwCaps & DDSCAPS_PRIMARYSURFACE) {
             primarySurface = newSurface;
 
-            // Create back buffer if requested
-            if (desc->dwFlags & DDSD_BACKBUFFERCOUNT && desc->dwBackBufferCount > 0) {
+            // Create back buffer if flippable (double buffering)
+            if ((desc->ddsCaps.dwCaps & DDSCAPS_FLIP) &&
+                (desc->dwFlags & DDSD_BACKBUFFERCOUNT) &&
+                (desc->dwBackBufferCount > 0)) {
                 SDL_Texture* backTex = SDL_CreateTexture(renderer,
                                                         SDL_PIXELFORMAT_ARGB8888,
                                                         SDL_TEXTUREACCESS_TARGET,
                                                         width, height);
                 if (backTex) {
-                    backBuffer = new SDL2Surface(backTex, width, height);
+                    SDL2Surface* backBuf = new SDL2Surface(backTex, width, height);
+                    // CRITICAL: Store backbuffer in primary surface so GetAttachedSurface() can find it
+                    newSurface->attachedBackBuffer = backBuf;
+                    backBuffer = backBuf;  // Also store in DirectDraw object for global access
                 }
             }
         }
