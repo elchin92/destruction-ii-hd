@@ -17,9 +17,24 @@
  * - Streaming buffers → SDL_RWops + Mix_LoadWAV_RW
  *******************************************************************************/
 
+// ===========================================================================
+// CRITICAL: Prevent inclusion of real DirectSound headers!
+// Must be defined BEFORE any Windows headers that might transitively include them
+// ===========================================================================
+#ifndef _DSOUND_H
+#define _DSOUND_H
+#endif
+#ifndef __DSOUND_INCLUDED__
+#define __DSOUND_INCLUDED__
+#endif
+#ifndef __dsound_h__
+#define __dsound_h__
+#endif
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <windows.h>
+#include <unknwn.h>  // For IUnknown
 #include <vector>
 #include <unordered_map>
 

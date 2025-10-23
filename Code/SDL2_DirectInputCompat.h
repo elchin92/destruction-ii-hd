@@ -16,8 +16,23 @@
  * - DIK codes → SDL_Scancode mapping
  *******************************************************************************/
 
+// ===========================================================================
+// CRITICAL: Prevent inclusion of real DirectInput headers!
+// Must be defined BEFORE any Windows headers that might transitively include them
+// ===========================================================================
+#ifndef _DINPUT_H
+#define _DINPUT_H
+#endif
+#ifndef __DINPUT_INCLUDED__
+#define __DINPUT_INCLUDED__
+#endif
+#ifndef __dinput_h__
+#define __dinput_h__
+#endif
+
 #include <SDL2/SDL.h>
 #include <windows.h>
+#include <unknwn.h>  // For IUnknown
 #include <unordered_map>
 #include <array>
 #include <memory>

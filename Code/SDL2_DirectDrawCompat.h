@@ -17,17 +17,26 @@
  * - Color keys → SDL_SetTextureColorMod + SDL_SetTextureBlendMode
  *******************************************************************************/
 
+// ===========================================================================
+// CRITICAL: Prevent inclusion of real DirectDraw headers!
+// Must be defined BEFORE any Windows headers that might transitively include them
+// ===========================================================================
+#ifndef _DDRAW_H
+#define _DDRAW_H
+#endif
+#ifndef __DDRAW_INCLUDED__
+#define __DDRAW_INCLUDED__
+#endif
+#ifndef __ddraw_h__
+#define __ddraw_h__
+#endif
+
 #include <SDL2/SDL.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
 #include <windows.h> // For HRESULT, RECT, COLORREF, etc.
 #include <unknwn.h>  // For IUnknown
-
-// Prevent inclusion of real DirectDraw headers - we're replacing it!
-#ifndef _DDRAW_H
-#define _DDRAW_H
-#endif
 
 // ============================================================================
 // DirectDraw HRESULT Codes (Minimal Set)
