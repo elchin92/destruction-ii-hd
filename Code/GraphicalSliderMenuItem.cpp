@@ -39,7 +39,8 @@ void GraphicalSliderMenuItem::InternalBlit(int Selected){
 
 	TheMenuStyle->SetUnselectedStyle();
 	TheMenuStyle->SetTemporaryMenuAlign(TA_LEFT);
-	for(int j=0;j<(*MaxPointer);j++)
+	int j;
+	for(j=0;j<(*MaxPointer);j++)
 		Output[j]='I';
 	Output[j]='\0';
 

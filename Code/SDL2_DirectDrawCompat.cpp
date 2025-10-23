@@ -222,6 +222,42 @@ HRESULT SDL2Surface::Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags) {
 }
 
 // ============================================================================
+// SDL2Palette Implementation
+// ============================================================================
+
+HRESULT SDL2Palette::GetEntries(DWORD flags, DWORD start, DWORD count, PALETTEENTRY* outEntries) {
+    if (!outEntries || start + count > 256) {
+        return DDERR_INVALIDPARAMS;
+    }
+
+    // Copy palette entries
+    for (DWORD i = 0; i < count; i++) {
+        DWORD color = entries[start + i];
+        outEntries[i].peRed   = (color >> 16) & 0xFF;
+        outEntries[i].peGreen = (color >> 8) & 0xFF;
+        outEntries[i].peBlue  = color & 0xFF;
+        outEntries[i].peFlags = 0;
+    }
+
+    return DD_OK;
+}
+
+HRESULT SDL2Palette::SetEntries(DWORD flags, DWORD start, DWORD count, PALETTEENTRY* inEntries) {
+    if (!inEntries || start + count > 256) {
+        return DDERR_INVALIDPARAMS;
+    }
+
+    // Set palette entries
+    for (DWORD i = 0; i < count; i++) {
+        entries[start + i] = (inEntries[i].peRed << 16) |
+                             (inEntries[i].peGreen << 8) |
+                             inEntries[i].peBlue;
+    }
+
+    return DD_OK;
+}
+
+// ============================================================================
 // SDL2DirectDraw Implementation (IDirectDraw7)
 // ============================================================================
 

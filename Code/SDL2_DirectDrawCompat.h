@@ -222,6 +222,10 @@ struct SDL2Palette {
         }
         return refCount;
     }
+
+    // DirectDraw Palette methods
+    HRESULT GetEntries(DWORD flags, DWORD start, DWORD count, PALETTEENTRY* entries);
+    HRESULT SetEntries(DWORD flags, DWORD start, DWORD count, PALETTEENTRY* entries);
 };
 
 // ============================================================================
