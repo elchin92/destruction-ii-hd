@@ -73,15 +73,15 @@ struct SDL2DirectDraw;
 // Type Definitions (DirectDraw → SDL2 Mapping)
 // ============================================================================
 
-// DirectDraw interface pointers → Our compatibility layer
-typedef SDL2DirectDraw*     IDirectDraw7;
-typedef SDL2Surface*        IDirectDrawSurface7;
-typedef SDL2Palette*        IDirectDrawPalette;
+// DirectDraw interface types (non-pointer)
+typedef SDL2DirectDraw      IDirectDraw7;
+typedef SDL2Surface         IDirectDrawSurface7;
+typedef SDL2Palette         IDirectDrawPalette;
 
-// Legacy pointer types
-typedef IDirectDraw7*       LPDIRECTDRAW7;
-typedef IDirectDrawSurface7* LPDIRECTDRAWSURFACE7;
-typedef IDirectDrawPalette* LPDIRECTDRAWPALETTE;
+// Legacy pointer types (LP* = Long Pointer in Win16/32 terminology)
+typedef SDL2DirectDraw*     LPDIRECTDRAW7;
+typedef SDL2Surface*        LPDIRECTDRAWSURFACE7;
+typedef SDL2Palette*        LPDIRECTDRAWPALETTE;
 
 // ============================================================================
 // DirectDraw Structures
