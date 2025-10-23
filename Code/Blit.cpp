@@ -656,7 +656,7 @@ void Game::KillDeadAnims(){
 
 void Game::PreparePlayerSprites(){
 
-	LoadBitmap(&g_pDDSPlayer, TempPlayersBitmap);
+	g_pDDSPlayer = DDLoadBitmap(g_pDD, TempPlayersBitmap, 0, 0);
 	//CreateBlankSurface(32*8,32*6,&g_pDDSPlayer);
 
 	for(int pl=0;pl<2;pl++){

@@ -73,7 +73,7 @@ ActiveMenuItem * ActiveMenuItem::UpdateInput(){
 	return this;
 }
 
-ActiveMenuItem::CatchesEscape(){return CatchingEscape;}
+int ActiveMenuItem::CatchesEscape(){return CatchingEscape;}
 
 void ActiveMenuItem::SetSelection(int newSelection){
 	if(IsOption())

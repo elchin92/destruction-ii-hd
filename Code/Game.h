@@ -302,7 +302,7 @@ public:
 	void SetActivePlayers();
 	void DoMagic();
 	void UpdateTime();
-	HINSTANCE GoToURL(char * URL, int QUITGAME=FALSE);
+	HINSTANCE GoToURL(const char * URL, int QUITGAME=FALSE);
 
 #ifdef __D2PROTECTED__
 	unsigned short * String2Code(char Code[50]);

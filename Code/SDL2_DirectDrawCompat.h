@@ -198,6 +198,8 @@ struct SDL2Surface {
     HRESULT SetPalette(LPDIRECTDRAWPALETTE palette);
     HRESULT SetColorKey(DWORD flags, DDCOLORKEY* colorKey);
     HRESULT Restore();
+    HRESULT GetFlipStatus(DWORD flags);
+    HRESULT Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags);
 };
 
 // ============================================================================

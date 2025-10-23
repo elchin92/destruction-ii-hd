@@ -926,7 +926,7 @@ void Game::BeginNewRound(){
 
 int Game::IsPaused(){return PAUSE;}
 int Game::IsSuddenDeath(){return SUDDENDEATH;}
-HINSTANCE Game::GoToURL(char * URL, int QUITGAME){
+HINSTANCE Game::GoToURL(const char * URL, int QUITGAME){
 
 	ClearScreen();
 

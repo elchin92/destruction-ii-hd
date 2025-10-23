@@ -208,6 +208,19 @@ HRESULT SDL2Surface::Restore() {
     return DD_OK;
 }
 
+HRESULT SDL2Surface::GetFlipStatus(DWORD flags) {
+    // SDL2 doesn't have explicit flip status (always ready in modern graphics)
+    return DD_OK;
+}
+
+HRESULT SDL2Surface::Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags) {
+    // Present the rendered frame
+    if (g_SDLRenderer) {
+        SDL_RenderPresent(g_SDLRenderer);
+    }
+    return DD_OK;
+}
+
 // ============================================================================
 // SDL2DirectDraw Implementation (IDirectDraw7)
 // ============================================================================
