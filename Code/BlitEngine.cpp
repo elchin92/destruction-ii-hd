@@ -691,15 +691,39 @@ void Game::SetCamera(){
 
 
 void Game::LoadBitmapToSurface(LPDIRECTDRAWSURFACE7 * Surface, const char * Bitmap){
-	if((*Surface))
+	printf("[DEBUG] LoadBitmapToSurface() START, Surface=%p, Bitmap=%s\n",
+	       Surface, Bitmap ? Bitmap : "(null)"); fflush(stdout);
+
+	printf("[DEBUG] Checking if *Surface is not NULL\n"); fflush(stdout);
+	// FIX: Check for uninitialized memory (0xCDCDCDCD debug pattern)
+	// Only call Release() if pointer looks valid (not NULL and not uninitialized)
+	uintptr_t surfaceValue = (uintptr_t)(*Surface);
+	if(surfaceValue != 0 &&
+	   surfaceValue != (uintptr_t)0xCDCDCDCDCDCDCDCD &&
+	   surfaceValue != (uintptr_t)0xCDCDCDCD) {
+		printf("[DEBUG] *Surface=%p looks valid, calling Release()\n", *Surface); fflush(stdout);
 		(*Surface)->Release();
+		printf("[DEBUG] Release() OK\n"); fflush(stdout);
+	} else {
+		printf("[DEBUG] *Surface=%p looks uninitialized, skipping Release()\n", *Surface); fflush(stdout);
+	}
+
+	printf("[DEBUG] About to call DDLoadBitmap(g_pDD=%p, Bitmap=%s)\n",
+	       g_pDD, Bitmap ? Bitmap : "(null)"); fflush(stdout);
 	(*Surface) = DDLoadBitmap(g_pDD, Bitmap, 0, 0);
+	printf("[DEBUG] DDLoadBitmap() returned: %p\n", *Surface); fflush(stdout);
+
 	if(*Surface==NULL){
 		char BitmapName[256];
 		strcpy(BitmapName,Bitmap);
+		printf("[DEBUG] DDLoadBitmap() returned NULL, calling UserMessage\n"); fflush(stdout);
 		UserMessage(" DDLoadBitmap() failed",BitmapName, FALSE);
 	}
+
+	printf("[DEBUG] About to call DDSetColorKey(*Surface=%p, RGB(0,0,0))\n", *Surface); fflush(stdout);
 	DDSetColorKey((*Surface), RGB(0, 0, 0));
+	printf("[DEBUG] DDSetColorKey() OK\n"); fflush(stdout);
+	printf("[DEBUG] LoadBitmapToSurface() COMPLETE\n"); fflush(stdout);
 
 }
 

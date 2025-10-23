@@ -532,32 +532,72 @@ IDirectDrawPalette* DDLoadPalette(IDirectDraw7* dd, LPCSTR bitmapPath) {
 }
 
 IDirectDrawSurface7* DDLoadBitmap(IDirectDraw7* dd, LPCSTR bitmapPath, int width, int height) {
-    if (!g_SDLRenderer || !bitmapPath) return nullptr;
+    printf("[DEBUG] DDLoadBitmap() called for: %s\n", bitmapPath ? bitmapPath : "(null)"); fflush(stdout);
+
+    if (!g_SDLRenderer) {
+        printf("[ERROR] DDLoadBitmap() - g_SDLRenderer is NULL!\n"); fflush(stdout);
+        return nullptr;
+    }
+    if (!bitmapPath) {
+        printf("[ERROR] DDLoadBitmap() - bitmapPath is NULL!\n"); fflush(stdout);
+        return nullptr;
+    }
 
     // Load surface from file
-    SDL_Surface* loadedSurface = IMG_Load(bitmapPath);
+    // Try multiple paths: as-is, with .bmp, and in Bitmaps/ subdirectory
+    SDL_Surface* loadedSurface = nullptr;
+    std::string path(bitmapPath);
+
+    // 1. Try as-is first
+    printf("[DEBUG] Calling IMG_Load(%s)\n", bitmapPath); fflush(stdout);
+    loadedSurface = IMG_Load(bitmapPath);
+
+    // 2. Try with .bmp extension
+    if (!loadedSurface && path.find('.') == std::string::npos) {
+        std::string pathWithExt = path + ".bmp";
+        printf("[DEBUG] IMG_Load failed, trying with .bmp extension: %s\n", pathWithExt.c_str()); fflush(stdout);
+        loadedSurface = IMG_Load(pathWithExt.c_str());
+    }
+
+    // 3. Try in Bitmaps/ subdirectory
     if (!loadedSurface) {
-        // Try with .bmp extension if not specified
-        std::string path(bitmapPath);
-        if (path.find('.') == std::string::npos) {
-            path += ".bmp";
-            loadedSurface = IMG_Load(path.c_str());
+        std::string bitmapPath2 = "Bitmaps/" + path;
+        printf("[DEBUG] Still failed, trying in Bitmaps/ subdirectory: %s\n", bitmapPath2.c_str()); fflush(stdout);
+        loadedSurface = IMG_Load(bitmapPath2.c_str());
+
+        // 4. Try Bitmaps/ + .bmp
+        if (!loadedSurface && path.find('.') == std::string::npos) {
+            bitmapPath2 = "Bitmaps/" + path + ".bmp";
+            printf("[DEBUG] Trying Bitmaps/ with .bmp: %s\n", bitmapPath2.c_str()); fflush(stdout);
+            loadedSurface = IMG_Load(bitmapPath2.c_str());
         }
     }
 
-    if (!loadedSurface) return nullptr;
+    if (!loadedSurface) {
+        printf("[ERROR] DDLoadBitmap() - IMG_Load failed for %s: %s\n", bitmapPath, SDL_GetError()); fflush(stdout);
+        return nullptr;
+    }
+
+    printf("[DEBUG] IMG_Load OK, surface: %dx%d\n", loadedSurface->w, loadedSurface->h); fflush(stdout);
 
     // Convert surface to texture
+    printf("[DEBUG] Creating texture from surface\n"); fflush(stdout);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(g_SDLRenderer, loadedSurface);
 
     int w = loadedSurface->w;
     int h = loadedSurface->h;
     SDL_FreeSurface(loadedSurface);
 
-    if (!texture) return nullptr;
+    if (!texture) {
+        printf("[ERROR] DDLoadBitmap() - SDL_CreateTextureFromSurface failed: %s\n", SDL_GetError()); fflush(stdout);
+        return nullptr;
+    }
 
+    printf("[DEBUG] Texture created, creating SDL2Surface wrapper\n"); fflush(stdout);
     // Create surface wrapper
-    return new SDL2Surface(texture, w, h);
+    SDL2Surface* result = new SDL2Surface(texture, w, h);
+    printf("[DEBUG] DDLoadBitmap() returning surface: %p\n", result); fflush(stdout);
+    return result;
 }
 
 HRESULT DDReLoadBitmap(IDirectDrawSurface7* surface, LPCSTR bitmapPath) {
@@ -597,7 +637,12 @@ DWORD DDColorMatch(IDirectDrawSurface7* surface, COLORREF rgb) {
 }
 
 HRESULT DDSetColorKey(IDirectDrawSurface7* surface, COLORREF rgb) {
-    if (!surface) return DDERR_GENERIC;
+    printf("[DEBUG] DDSetColorKey() called, surface=%p, rgb=0x%06X\n", surface, rgb); fflush(stdout);
+
+    if (!surface) {
+        printf("[ERROR] DDSetColorKey() - surface is NULL!\n"); fflush(stdout);
+        return DDERR_GENERIC;
+    }
 
     SDL2Surface* sdlSurface = static_cast<SDL2Surface*>(surface);
 
@@ -605,5 +650,8 @@ HRESULT DDSetColorKey(IDirectDrawSurface7* surface, COLORREF rgb) {
     colorKey.dwColorSpaceLowValue = DDColorMatch(surface, rgb);
     colorKey.dwColorSpaceHighValue = colorKey.dwColorSpaceLowValue;
 
-    return sdlSurface->SetColorKey(0, &colorKey);
+    printf("[DEBUG] DDSetColorKey() calling SetColorKey\n"); fflush(stdout);
+    HRESULT result = sdlSurface->SetColorKey(0, &colorKey);
+    printf("[DEBUG] DDSetColorKey() returning\n"); fflush(stdout);
+    return result;
 }

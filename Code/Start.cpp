@@ -121,5 +121,5 @@ void Start::SetSurfaces(){
 }
 void Start::SetResumeSurfaces(){
 	StateBitmaps[0]="StartMenuR";
-	StateBitmaps[1]="StartMenuSelectedR";
+	StateBitmaps[1]="StartMenuRS";  // Fixed: actual file is StartMenuRS.bmp (R Selected)
 }
