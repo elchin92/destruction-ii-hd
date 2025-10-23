@@ -9,6 +9,9 @@
 #include "definitions.h"
 #include "debugger.h"
 #include "InfoBox.h"
+
+using namespace std;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -39,11 +42,11 @@ void LoadSaveState::BuildMenu(int ExtraEmpty){
 	int Free[5]={TRUE,TRUE,TRUE,TRUE,TRUE};
 	for(int i=0, items=0;i<MAXSAVEGAMES;i++){
 		sprintf(FileName,"Save\\Save%i.DSG",i);
-		ifstream File(FileName, ios::nocreate, filebuf::openprot);
-		File.setmode( filebuf::binary );
+		ifstream File(FileName, ios::binary);
+		// Modern C++: ios::binary replaces ios::nocreate | filebuf::openprot | setmode
 
 		BYTE NameLength=0;
-		File.read( &NameLength, 1 );
+		File.read( reinterpret_cast<char*>(&NameLength), 1 );
 		if(	NameLength ){
 			File.read( FileName, NameLength );
 			FileName[NameLength]='\0';
