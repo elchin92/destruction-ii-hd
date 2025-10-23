@@ -62,6 +62,7 @@ void GameState::ForcedSwitchState(gState State, int SubMenu){
 	InternalSwitchState(State, SubMenu);
 }
 void GameState::InternalSwitchState(gState State, int SubMenu){
+	printf("[DEBUG] InternalSwitchState() START, State=%d\n", State); fflush(stdout);
 
 	if(SubMenu)
 		TheGame->GameStates[State]->SetReturnState(GameStatus);
@@ -70,21 +71,29 @@ void GameState::InternalSwitchState(gState State, int SubMenu){
 	cgs=TheGame->GameStates[State];
 	cgs->DisableMsg();
 	Beacon(333000);
+	printf("[DEBUG] About to call PrepareNewScreen()\n"); fflush(stdout);
 	TheGame->PrepareNewScreen();
 	Beacon(333001);
+	printf("[DEBUG] PrepareNewScreen() OK, about to call LoadBitmaps()\n"); fflush(stdout);
 	cgs->LoadBitmaps();
 	Beacon(333002);
+	printf("[DEBUG] LoadBitmaps() OK\n"); fflush(stdout);
 
 	if(cgs->IsFading()){
 		Beacon(3330021);
+		printf("[DEBUG] Calling InitializeFadeIn()\n"); fflush(stdout);
 		((FadingGameState *)cgs)->InitializeFadeIn();
-	} 
+	}
 	Beacon(333003);
+	printf("[DEBUG] About to call SetCorrectPaletteAndGamma()\n"); fflush(stdout);
 	cgs->SetCorrectPaletteAndGamma();
 	Beacon(333004);
+	printf("[DEBUG] SetCorrectPaletteAndGamma() OK, about to call Setup()\n"); fflush(stdout);
 	cgs->Setup();
+	printf("[DEBUG] Setup() OK, about to call SetupSurfaces()\n"); fflush(stdout);
 	cgs->SetupSurfaces();
 	Beacon(333005);
+	printf("[DEBUG] InternalSwitchState() COMPLETED\n"); fflush(stdout);
 
 	SwitchingState=FALSE;
 
@@ -110,14 +119,17 @@ int GameState::IsFading(){return 0;}
 void GameState::ReturnToMotherState(){if(ReturnState!=NoState)SwitchState(ReturnState,FALSE);}
 
 HRESULT GameState::LoadBitmaps(){
-
+	printf("[DEBUG] GameState::LoadBitmaps() START, NumberOfStateSurfaces=%d\n", NumberOfStateSurfaces); fflush(stdout);
 
 	HRESULT hRet=DD_OK;
 	for(int i=0; i<NumberOfStateSurfaces;i++){
+		printf("[DEBUG] LoadBitmaps loop i=%d, bitmap=%s\n", i, StateBitmaps[i] ? StateBitmaps[i] : "(null)"); fflush(stdout);
 		g_pDDPal = DDLoadPalette(TheGame->g_pDD, StateBitmaps[i]);
 		if (g_pDDPal)
 			TheGame->g_pDDSPrimary->SetPalette(g_pDDPal);
+		printf("[DEBUG] About to call LoadBitmapToSurface for bitmap: %s\n", StateBitmaps[i] ? StateBitmaps[i] : "(null)"); fflush(stdout);
 		TheGame->LoadBitmapToSurface(StateSurfaces[i],StateBitmaps[i]);
+		printf("[DEBUG] LoadBitmapToSurface returned\n"); fflush(stdout);
 		if((*StateSurfaces[i])==NULL){
 			char debug[70];
 			sprintf(debug, " GameState: %i\n Bitmap: %i", GameStatus, i);
@@ -125,7 +137,7 @@ HRESULT GameState::LoadBitmaps(){
 		}
 	}
 
-
+	printf("[DEBUG] GameState::LoadBitmaps() COMPLETED\n"); fflush(stdout);
 	return DD_OK;
 
 }
