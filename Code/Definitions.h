@@ -318,7 +318,7 @@ const int RegExpRadiuses[RET_RADIUSBLOWS]={3,4,5,7};
 #define KillLinkedListIndCond(type, start, cond, next)	{ type * prev=NULL;type * it=(start);while(it){type * kill=NULL;if(cond){if(prev)		{prev->next=it->next;}else{start=it->next;}kill=it;}if(!kill)prev=it;it=it->next;if(kill)delete kill;}}
 #define KillEntireLinkedList(type,start,next) { type * prev=NULL;type * it=(start);while(it){type * kill=NULL;		 if(prev)		{prev->next=it->next;}else{start=it->next;}kill=it; if(!kill)prev=it;it=it->next;if(kill)delete kill;}}
 #define KillEntireCircularLinkedList(type, start, next)	{type * ckill = start->next;	start->next=NULL;KillEntireLinkedList(type, ckill, next);}
-#define RemoveFromLinkedList(type, list,next,item) {if(list==item)list=item->next;else{for(type * temp=list;temp->next!=item;temp=temp->next);	temp->next=temp->next->next;}}
+#define RemoveFromLinkedList(type, list,next,item) {if(list==item)list=item->next;else{type * temp; for(temp=list;temp->next!=item;temp=temp->next);	temp->next=temp->next->next;}}  // C++20: declare temp before for-loop
 #define AddLastToLinkedList(type, list, next, item) {if(!list)list=item;else{type * last=list;while(last->next){last=last->next;}last->next=item;}}
 #define AddToLinkedList(list, next,item) {item->next=list;list=item;}
 #define RemoveThisFromLinkedList(type, list, next) RemoveFromLinkedList(type, list,next,this)
