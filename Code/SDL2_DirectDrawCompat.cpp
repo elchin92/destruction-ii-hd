@@ -436,6 +436,10 @@ HRESULT SDL2DirectDraw::FlipToGDISurface() {
 HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullscreen) {
     printf("[DEBUG] SDL2DirectDraw::Initialize() START\n"); fflush(stdout);
 
+    // Disable HiDPI scaling - we want exact pixel control like Windows XP
+    SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");  // Nearest pixel sampling
+
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0) {
         printf("[ERROR] SDL_Init FAILED!\n"); fflush(stdout);
@@ -443,8 +447,8 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     }
     printf("[DEBUG] SDL_Init OK\n"); fflush(stdout);
 
-    // Create window
-    Uint32 windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+    // Create window with fixed size (like original game on XP)
+    Uint32 windowFlags = SDL_WINDOW_SHOWN;  // Removed RESIZABLE for stability
     if (fullscreen) {
         windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
@@ -459,6 +463,11 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     }
     printf("[DEBUG] SDL_CreateWindow OK\n"); fflush(stdout);
 
+    // Check actual window size
+    int actualWidth, actualHeight;
+    SDL_GetWindowSize(window, &actualWidth, &actualHeight);
+    printf("[DEBUG] Window size: requested=%dx%d, actual=%dx%d\n", width, height, actualWidth, actualHeight); fflush(stdout);
+
     // Create renderer
     renderer = SDL_CreateRenderer(window, -1,
                                  SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -470,6 +479,11 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     }
     printf("[DEBUG] SDL_CreateRenderer OK\n"); fflush(stdout);
 
+    // Check renderer output size (may differ on HiDPI displays)
+    int outputWidth, outputHeight;
+    SDL_GetRendererOutputSize(renderer, &outputWidth, &outputHeight);
+    printf("[DEBUG] Renderer output size: %dx%d\n", outputWidth, outputHeight); fflush(stdout);
+
     // Store renderer globally for surface operations
     g_SDLRenderer = renderer;
 
@@ -477,7 +491,7 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     screenHeight = height;
     this->fullscreen = fullscreen;
 
-    printf("[DEBUG] SDL2DirectDraw::Initialize() SUCCESS\n"); fflush(stdout);
+    printf("[DEBUG] SDL2DirectDraw::Initialize() SUCCESS (stored: %dx%d)\n", screenWidth, screenHeight); fflush(stdout);
     return DD_OK;
 }
 
