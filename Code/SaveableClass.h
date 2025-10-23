@@ -9,7 +9,7 @@ class SaveableClass
 {
 protected:
 
-	void Initialize(char * iTopic);
+	void Initialize(const char * iTopic);
 	SaveableItem * TheSaveableItems;
 	char * Topic;
 
@@ -29,17 +29,17 @@ public:
 	// but no item must come before an item which it was after
 	// in a previous version!!
 
-	// Further notice: call this function like; 
+	// Further notice: call this function like;
 	// RegisterItem("NumberOfPlayers",&NumberOfPlayers, sizeof(NumberOfPlayers));
 	// RegisterItem("TenElemArray",&teArray[0], sizeof(teArray[0])*10);
-	void RegisterItem(char * ItemName, void * Data, int sizeofData);
+	void RegisterItem(const char * ItemName, void * Data, int sizeofData);
 
 	int LoadClass(ifstream * savefile, int PerformLoad);
 	void SaveClass(ofstream * savefile);
 
 	void ReportData(unsigned char Data);
 
-	int TopicCheck(char * PossibleTopic);
+	int TopicCheck(const char * PossibleTopic);
 
 	virtual void PreLoad(int PerformLoad);
 	virtual void PostLoad(int PerformLoad);

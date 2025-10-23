@@ -23,7 +23,7 @@ SaveableClass::~SaveableClass()
 {
 	SAFE_DELETE(TheSaveableItems);
 }
-void SaveableClass::RegisterItem(char * ItemName, void * Data, int sizeofData ){
+void SaveableClass::RegisterItem(const char * ItemName, void * Data, int sizeofData ){
 	// No Beacons in here!!
 	SaveableItem * newItem = new SaveableItem(ItemName, Data, sizeofData);
 	AddToLinkedList(TheSaveableItems, nextSaveableItem, newItem);
@@ -72,8 +72,8 @@ void SaveableClass::SaveClass(ofstream * savefile){
 
 
 }
-void SaveableClass::Initialize(char * iTopic){
-	Topic=iTopic;
+void SaveableClass::Initialize(const char * iTopic){
+	Topic=const_cast<char*>(iTopic);
 	TheSaveableItems=NULL;
 	nextSaveableClass=NULL;
 }
@@ -82,7 +82,7 @@ void SaveableClass::ReportData(BYTE Data){
 	CheckSum+=((int)Data+2)*rand();
 }
 
-int SaveableClass::TopicCheck(char * PossibleTopic){
+int SaveableClass::TopicCheck(const char * PossibleTopic){
 	return !strcmp(PossibleTopic, Topic);
 }
 
