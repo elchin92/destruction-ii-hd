@@ -61,6 +61,10 @@
 #define DDERR_GENERIC                   E_FAIL
 #endif
 
+#ifndef DDERR_NOEXCLUSIVEMODE
+#define DDERR_NOEXCLUSIVEMODE           MAKE_HRESULT(1, 0x876, 560)
+#endif
+
 // ============================================================================
 // Forward Declarations
 // ============================================================================
@@ -270,6 +274,10 @@ struct SDL2DirectDraw {
     HRESULT CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7* surface, void* unkOuter);
     HRESULT RestoreDisplayMode();
     HRESULT FlipToGDISurface();
+    HRESULT TestCooperativeLevel() {
+        // SDL2 doesn't lose cooperative level like DirectDraw, always return OK
+        return DD_OK;
+    }
 
     // Helper methods
     HRESULT Initialize(HWND hwnd, int width, int height, bool fullscreen);

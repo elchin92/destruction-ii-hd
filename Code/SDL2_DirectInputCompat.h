@@ -74,14 +74,24 @@
 #define DIRECTINPUT_VERSION            0x0800
 #endif
 
-// Property constants
-#define DIPROP_RANGE                   ((REFGUID)1)
+// Property constants - use static GUID instead of macro to allow taking address
+static const GUID DIPROP_RANGE_GUID = {1, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
+#define DIPROP_RANGE                   (&DIPROP_RANGE_GUID)
 
 // Property header flags
 #define DIPH_BYOFFSET                  2
 
+// DirectInput error codes
+#define DIERR_INPUTLOST                0x8007001E
+#define DIERR_NOTACQUIRED              0x8007000C
+
+// Device type constants
+#define DIDEVTYPE_JOYSTICK             4
+#define DIEDFL_ATTACHEDONLY            0x00000001
+
 // GUIDs for device interfaces
 static const GUID IID_IDirectInputDevice2 = {0, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
+static const GUID IID_IDirectInput7 = {0, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
 
 // Windows constant (for GetWindowLong)
 #ifndef GWLP_HINSTANCE
@@ -267,6 +277,12 @@ typedef SDL2DirectInput*     LPDIRECTINPUT7;
 typedef SDL2InputDevice*     LPDIRECTINPUTDEVICE;   // NOT IDirectInputDevice*!
 typedef SDL2InputDevice*     LPDIRECTINPUTDEVICE2;  // NOT IDirectInputDevice2*!
 
+// DirectInput COM-style method macros (for legacy code compatibility)
+#define IDirectInputDevice_Acquire(p)           (p)->Acquire()
+#define IDirectInputDevice_Unacquire(p)         (p)->Unacquire()
+#define IDirectInputDevice_GetDeviceState(p,a,b) (p)->GetDeviceState(a,b)
+#define IDirectInputDevice_Poll(p)              (p)->Poll()
+
 typedef unsigned char        BYTE;
 
 // ============================================================================
@@ -289,6 +305,48 @@ struct DIDEVCAPS {
 };
 
 // Joystick state
+// Data format structures
+typedef struct DIOBJECTDATAFORMAT {
+    const GUID *pguid;
+    DWORD dwOfs;
+    DWORD dwType;
+    DWORD dwFlags;
+} DIOBJECTDATAFORMAT, *LPDIOBJECTDATAFORMAT;
+
+typedef struct DIDATAFORMAT {
+    DWORD dwSize;
+    DWORD dwObjSize;
+    DWORD dwFlags;
+    DWORD dwDataSize;
+    DWORD dwNumObjs;
+    LPDIOBJECTDATAFORMAT rgodf;
+} DIDATAFORMAT, *LPDIDATAFORMAT;
+
+// Predefined data format for joystick (stub - actual implementation would have object list)
+static DIDATAFORMAT c_dfDIJoystick_stub = {
+    sizeof(DIDATAFORMAT),
+    sizeof(DIOBJECTDATAFORMAT),
+    0x00000002,  // DIDF_ABSAXIS
+    80,          // Data size for DIJOYSTATE
+    0,           // Number of objects (stub)
+    nullptr      // Object format array (stub)
+};
+#define c_dfDIJoystick  (&c_dfDIJoystick_stub)
+
+// Simple joystick state (DirectInput 1-5 compatible)
+struct DIJOYSTATE {
+    LONG    lX;
+    LONG    lY;
+    LONG    lZ;
+    LONG    lRx;
+    LONG    lRy;
+    LONG    lRz;
+    LONG    rglSlider[2];
+    DWORD   rgdwPOV[4];
+    BYTE    rgbButtons[32];
+};
+
+// Extended joystick state (DirectInput 7+)
 struct DIJOYSTATE2 {
     LONG    lX;
     LONG    lY;
