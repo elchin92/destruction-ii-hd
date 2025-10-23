@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <time.h>
 #include <fstream>
-using std::ofstream;
+
+using namespace std;
+
 #include "GameKeeper.h"
 Save::Save(){
 	Initialize();
@@ -72,16 +74,16 @@ void Save::WriteData(int which, char * Name){
 
 	char FileName[41];
 	sprintf(FileName,"Save\\Save%i.DSG",which);
-	ofstream File(FileName);
+	ofstream File(FileName, ios::binary);
 	DP("SaveName");
 	DP(FileName);
-	File.setmode( filebuf::binary );
+	// Modern C++: ios::binary replaces setmode(filebuf::binary)
 
 	sprintf(FileName,"%s - %s",gtNames[TheGameKeeper->GetGameType()], Name );
 	DP(FileName);
 
 	BYTE NameLength = (BYTE)strlen(FileName);
-	File.write(&NameLength,1);
+	File.write(reinterpret_cast<char*>(&NameLength),1);
 	File.write(FileName,NameLength);
 	for(SaveableClass *sc=TheSaveableClasses; sc ; sc=sc->nextSaveableClass){
 		sc->PreSave();
