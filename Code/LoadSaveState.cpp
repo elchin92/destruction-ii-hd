@@ -40,7 +40,8 @@ void LoadSaveState::BuildMenu(int ExtraEmpty){
 	char FileName[41];
 	int LowestFree=0;
 	int Free[5]={TRUE,TRUE,TRUE,TRUE,TRUE};
-	for(int i=0, items=0;i<MAXSAVEGAMES;i++){
+	int items=0;
+	for(int i=0;i<MAXSAVEGAMES;i++){
 		sprintf(FileName,"Save\\Save%i.DSG",i);
 		ifstream File(FileName, ios::binary);
 		// Modern C++: ios::binary replaces ios::nocreate | filebuf::openprot | setmode
