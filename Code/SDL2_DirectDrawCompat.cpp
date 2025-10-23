@@ -372,7 +372,8 @@ HRESULT SDL2DirectDraw::CreatePalette(DWORD flags, PALETTEENTRY* entries, LPDIRE
     // Copy palette entries if provided
     if (entries) {
         for (int i = 0; i < 256; i++) {
-            newPalette->entries[i] = entries[i];
+            // C++20: Convert PALETTEENTRY to DWORD (RGBA packed)
+            newPalette->entries[i] = (entries[i].peRed) | (entries[i].peGreen << 8) | (entries[i].peBlue << 16) | (entries[i].peFlags << 24);
         }
     }
 

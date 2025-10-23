@@ -31,8 +31,8 @@ void NewStore::OnEnterShop(){
 	SetSection(Selection[cpl]+1);
 	Selection[cpl]=0;
 	Choice[cpl]=1;
-	ButtonFunctions[cpl][2]=OnBuy;
-	ButtonFunctions[cpl][3]=OnSell;
+	ButtonFunctions[cpl][2]=&NewStore::OnBuy; // C++20: & required
+	ButtonFunctions[cpl][3]=&NewStore::OnSell;
 	sprintf(Msg,"Press <%s> to return and select a new store",DIK2STR(esc[cpl]));
 	iMessage(mcBlue);
 }

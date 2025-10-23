@@ -71,8 +71,8 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 // Name: EnumAxesCallback()
 // Desc: Callback function for enumerating the axes on a joystick
 //-----------------------------------------------------------------------------
-BOOL CALLBACK EnumAxesCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
-                                VOID* pContext )
+BOOL CALLBACK EnumAxesCallback( LPDIDEVICEOBJECTINSTANCE pdidoi, // Removed const for DirectInput compatibility
+                                LPVOID pContext )
 {
     HWND hDlg = (HWND)pContext;
 
@@ -86,7 +86,7 @@ BOOL CALLBACK EnumAxesCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
     
 
 	// Set the range for the axis
-	if( FAILED( TheInputEngine->CurrentJoystick->SetProperty( DIPROP_RANGE, &diprg.diph ) ) ){
+	if( FAILED( TheInputEngine->CurrentJoystick->SetProperty( *DIPROP_RANGE, &diprg.diph ) ) ){ // Dereference GUID pointer
 		sprintf(str,"SetProperty() failed.");
 		TheGame->UserMessage("Joystick Error", str,FALSE);
 		return DIENUM_STOP;
@@ -596,7 +596,7 @@ void InputEngine::LookForJoysticks(){
 			CurrentJoystick=g_pTempJoystick[joy];
 			Beacon(101);
 
-			hr = CurrentJoystick->SetDataFormat( &c_dfDIJoystick );
+			hr = CurrentJoystick->SetDataFormat( c_dfDIJoystick ); // c_dfDIJoystick is already a pointer
 			if( FAILED(hr) ){
 				sprintf(str,"SetDataFormat() failed. Device: %i",joy+1);
 				TheGame->UserMessage("Joystick Error", str, FALSE);

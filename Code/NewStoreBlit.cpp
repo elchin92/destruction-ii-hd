@@ -209,13 +209,13 @@ void NewStore::BlitArmorInfo(int w){
 void NewStore::BlitWeaponInfo(int w){
 	CurrentWeapon=apl->GetWeapon();
 
-	BlitFunctions[1][0]=BlitWeaponTitle;
+	BlitFunctions[1][0]=&NewStore::BlitWeaponTitle; // C++20: & required
 	for(int i=0;i<3;i++){
 		if(WeaponBox[i]->BlankAndPrepareBox(400*w) ){
 			(this->*(BlitFunctions[1][i]))(WeaponBox[i]);
-		}WeaponBox[i]->CloseBox();	
+		}WeaponBox[i]->CloseBox();
 	}
-	BlitFunctions[1][0]=BlitRegularShopTitle;
+	BlitFunctions[1][0]=&NewStore::BlitRegularShopTitle; // C++20: & required
 }
 
 void NewStore::BlitCurrentItem(int w){

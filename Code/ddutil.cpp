@@ -22,7 +22,9 @@
 //-----------------------------------------------------------------------------
 // Name: DDCopyBitmap()
 // Desc: Draw a bitmap into a DirectDrawSurface
+// NOTE: Now implemented in SDL2_DirectDrawCompat.cpp - this version commented out
 //-----------------------------------------------------------------------------
+#if 0
 HRESULT DDCopyBitmap(IDirectDrawSurface7 * pdds, HBITMAP hbm, int x, int y,
              int dx, int dy)
 {
@@ -249,7 +251,9 @@ IDirectDrawPalette * DDLoadPalette(IDirectDraw7 * pdd, LPCSTR szBitmap)
 // Desc: Convert a RGB color to a pysical color.
 //       We do this by leting GDI SetPixel() do the color matching
 //       then we lock the memory and see what it got mapped to.
+// NOTE: Now implemented in SDL2_DirectDrawCompat.cpp - this version commented out
 //-----------------------------------------------------------------------------
+#if 0
 DWORD DDColorMatch(IDirectDrawSurface7 * pdds, COLORREF rgb)
 {
     COLORREF                rgbT;
@@ -290,6 +294,7 @@ DWORD DDColorMatch(IDirectDrawSurface7 * pdds, COLORREF rgb)
     }
     return dw;
 }
+#endif // Commented out - using SDL2 version
 
 
 
@@ -299,7 +304,9 @@ DWORD DDColorMatch(IDirectDrawSurface7 * pdds, COLORREF rgb)
 // Desc: Set a color key for a surface, given a RGB.
 //       If you pass CLR_INVALID as the color key, the pixel
 //       in the upper-left corner will be used.
+// NOTE: Now implemented in SDL2_DirectDrawCompat.cpp - this version commented out
 //-----------------------------------------------------------------------------
+#if 0
 HRESULT DDSetColorKey(IDirectDrawSurface7 * pdds, COLORREF rgb)
 {
     DDCOLORKEY              ddck;
@@ -308,5 +315,6 @@ HRESULT DDSetColorKey(IDirectDrawSurface7 * pdds, COLORREF rgb)
     ddck.dwColorSpaceHighValue = ddck.dwColorSpaceLowValue;
     return pdds->SetColorKey(DDCKEY_SRCBLT, &ddck);
 }
-
+#endif // Commented out DDSetColorKey
+#endif // Commented out all DirectDraw functions - using SDL2 versions from SDL2_DirectDrawCompat.cpp
 

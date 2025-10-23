@@ -8,10 +8,10 @@ class NumericalSliderMenuItem : public SliderMenuItem
 private:
 
 	int Pre;
-	char * Unit;
+	const char * Unit; // C++20: const char*
 public:
 
-	NumericalSliderMenuItem(MenuStyle * iTheMenuStyle, const char * iTitle, int iStartNumber, int iMin, int iMax, int iMulitiplier, char * unit=NULL, int pre=0);
+	NumericalSliderMenuItem(MenuStyle * iTheMenuStyle, const char * iTitle, int iStartNumber, int iMin, int iMax, int iMulitiplier, const char * unit=NULL, int pre=0); // C++20: const char*
 	NumericalSliderMenuItem(MenuStyle * iTheMenuStyle, const char * iTitle,  int iStart, int iMin, int * iMaxPointer, int iMulitiplier);
 
 	~NumericalSliderMenuItem();

@@ -10,7 +10,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-NumericalSliderMenuItem::NumericalSliderMenuItem(MenuStyle * iTheMenuStyle, const char * iTitle, int iStartNumber, int iMin, int iMax, int iMulitiplier, char * unit, int pre){
+NumericalSliderMenuItem::NumericalSliderMenuItem(MenuStyle * iTheMenuStyle, const char * iTitle, int iStartNumber, int iMin, int iMax, int iMulitiplier, const char * unit, int pre){ // C++20: const char*
 	SliderMenuItem::Initialize();
 	TheMenuStyle=iTheMenuStyle; Title=iTitle;
 	Max=iMax;

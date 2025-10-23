@@ -104,6 +104,6 @@ void NewStore::LeaveStore(){
 	// LeaveStore, or leave detailedinfo
 	Selection[cpl]=Section[cpl]-1;
 	SetSection(0);
-	ButtonFunctions[cpl][2]=OnEnterShop;
-	ButtonFunctions[cpl][3]=OnEnterShop;
+	ButtonFunctions[cpl][2]=&NewStore::OnEnterShop; // C++20: & required
+	ButtonFunctions[cpl][3]=&NewStore::OnEnterShop;
 }

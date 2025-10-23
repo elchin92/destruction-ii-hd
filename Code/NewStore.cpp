@@ -39,24 +39,24 @@ NewStore::NewStore(){
 		SpecialBox[sp]= new InfoBox(132+89*sp, 386, 72, 72,  &ShopFont16b, mcBlue, TA_CENTER);
 	}
 
-	BlitFunctions[0][0]=BlitRegularShopTitle;
-	BlitFunctions[0][2]=BlitSelectStoreInfo;
-	BlitFunctions[0][1]=BlitSelectStoreItem;
-	BlitFunctions[1][0]=BlitRegularShopTitle;
-	BlitFunctions[1][2]=BlitWeaponInfo;
-	BlitFunctions[1][1]=BlitWeaponItem;
-	BlitFunctions[2][0]=BlitRegularShopTitle;
-	BlitFunctions[2][2]=BlitAmmoInfo;
-	BlitFunctions[2][1]=BlitAmmoItem;
-	BlitFunctions[3][0]=BlitRegularShopTitle;
-	BlitFunctions[3][2]=BlitArmorInfo;
-	BlitFunctions[3][1]=BlitArmorItem;
-	BlitFunctions[4][0]=BlitRegularShopTitle;
-	BlitFunctions[4][2]=BlitMiscInfo;
-	BlitFunctions[4][1]=BlitMiscItem;
-	BlitFunctions[5][0]=BlitRegularShopTitle;
-	BlitFunctions[5][2]=BlitSpecialInfo;
-	BlitFunctions[5][1]=BlitSpecialItem;
+	BlitFunctions[0][0]=&NewStore::BlitRegularShopTitle; // C++20: & required for member function pointers
+	BlitFunctions[0][2]=&NewStore::BlitSelectStoreInfo;
+	BlitFunctions[0][1]=&NewStore::BlitSelectStoreItem;
+	BlitFunctions[1][0]=&NewStore::BlitRegularShopTitle;
+	BlitFunctions[1][2]=&NewStore::BlitWeaponInfo;
+	BlitFunctions[1][1]=&NewStore::BlitWeaponItem;
+	BlitFunctions[2][0]=&NewStore::BlitRegularShopTitle;
+	BlitFunctions[2][2]=&NewStore::BlitAmmoInfo;
+	BlitFunctions[2][1]=&NewStore::BlitAmmoItem;
+	BlitFunctions[3][0]=&NewStore::BlitRegularShopTitle;
+	BlitFunctions[3][2]=&NewStore::BlitArmorInfo;
+	BlitFunctions[3][1]=&NewStore::BlitArmorItem;
+	BlitFunctions[4][0]=&NewStore::BlitRegularShopTitle;
+	BlitFunctions[4][2]=&NewStore::BlitMiscInfo;
+	BlitFunctions[4][1]=&NewStore::BlitMiscItem;
+	BlitFunctions[5][0]=&NewStore::BlitRegularShopTitle;
+	BlitFunctions[5][2]=&NewStore::BlitSpecialInfo;
+	BlitFunctions[5][1]=&NewStore::BlitSpecialItem;
 
 	SetPriceAndInfo();
 
@@ -112,16 +112,16 @@ NewStore::NewStore(){
 	for(int s=0;s<2;s++){
 		Selection[s]=Section[s]=0;
 		Choice[s]=1;
-		ButtonFunctions[s][0]=OnLeft;
-		ButtonFunctions[s][1]=OnRight;
-		ButtonFunctions[s][2]=OnEnterShop;
-		ButtonFunctions[s][3]=OnEnterShop;
-		ButtonFunctions[s][4]=OnGive;
-		ButtonFunctions[s][5]=OnSwitch;
-		ButtonFunctions[s][6]=OnDetails;
-		ButtonFunctions[s][7]=OnQuit;
-		ButtonFunctions[s][8]=OnGoBack;
-		ButtonFunctions[s][9]=DoNothing;
+		ButtonFunctions[s][0]=&NewStore::OnLeft; // C++20: & required
+		ButtonFunctions[s][1]=&NewStore::OnRight;
+		ButtonFunctions[s][2]=&NewStore::OnEnterShop;
+		ButtonFunctions[s][3]=&NewStore::OnEnterShop;
+		ButtonFunctions[s][4]=&NewStore::OnGive;
+		ButtonFunctions[s][5]=&NewStore::OnSwitch;
+		ButtonFunctions[s][6]=&NewStore::OnDetails;
+		ButtonFunctions[s][7]=&NewStore::OnQuit;
+		ButtonFunctions[s][8]=&NewStore::OnGoBack;
+		ButtonFunctions[s][9]=&NewStore::DoNothing;
 	}
 
 
@@ -186,8 +186,8 @@ void NewStore::SetupPlayer(int pl){
 	Selection[pl]=0;
 	Section[pl]=0;
 	apl->ReceiveDonation();
-	ButtonFunctions[pl][2]=OnEnterShop;
-	ButtonFunctions[pl][3]=OnEnterShop;
+	ButtonFunctions[pl][2]=&NewStore::OnEnterShop; // C++20: & required
+	ButtonFunctions[pl][3]=&NewStore::OnEnterShop;
 }
 
 /*void NewStore::FixPlayerInfo(int who){
