@@ -26,9 +26,20 @@ static SDL_Renderer* g_SDLRenderer = nullptr;
 // ============================================================================
 
 HRESULT SDL2Surface::BltFast(DWORD x, DWORD y, LPDIRECTDRAWSURFACE7 src, RECT* srcRect, DWORD flags) {
+    static int bltCount = 0;
+    if (bltCount < 3) {
+        printf("[DEBUG] BltFast() called, dest=%p, src=%p, pos=(%d,%d)\n",
+               this, src, x, y); fflush(stdout);
+        bltCount++;
+    }
+
     if (!src || !g_SDLRenderer) return DDERR_GENERIC;
 
     SDL2Surface* srcSurface = static_cast<SDL2Surface*>(src);
+
+    // CRITICAL FIX: Set render target to THIS surface (destination)
+    // In DirectDraw, BltFast renders TO the surface it's called on
+    SDL_SetRenderTarget(g_SDLRenderer, this->texture);
 
     SDL_Rect sdlSrcRect;
     if (srcRect) {
@@ -222,10 +233,81 @@ HRESULT SDL2Surface::GetFlipStatus(DWORD flags) {
 }
 
 HRESULT SDL2Surface::Flip(LPDIRECTDRAWSURFACE7 backBuffer, DWORD flags) {
-    // Present the rendered frame
-    if (g_SDLRenderer) {
-        SDL_RenderPresent(g_SDLRenderer);
+    // In DirectDraw, Flip swaps primary and backbuffer
+    // In SDL2, we need to:
+    // 1. Copy backbuffer texture to screen (renderer target)
+    // 2. Present the frame
+
+    static int flipCount = 0;
+    if (flipCount < 5) {  // Only log first 5 flips to avoid spam
+        printf("[DEBUG] Flip() called, backBuffer=%p, attachedBackBuffer=%p\n",
+               backBuffer, attachedBackBuffer); fflush(stdout);
+        flipCount++;
     }
+
+    if (!g_SDLRenderer) {
+        printf("[ERROR] Flip() - g_SDLRenderer is NULL!\n"); fflush(stdout);
+        return DDERR_GENERIC;
+    }
+
+    // Get the backbuffer (either from parameter or attached surface)
+    SDL2Surface* backBuf = nullptr;
+    if (backBuffer) {
+        backBuf = static_cast<SDL2Surface*>(backBuffer);
+    } else if (attachedBackBuffer) {
+        backBuf = attachedBackBuffer;
+    }
+
+    // Set render target to screen (NULL = window)
+    if (SDL_SetRenderTarget(g_SDLRenderer, nullptr) != 0) {
+        if (flipCount <= 5) {
+            printf("[ERROR] Flip() - SDL_SetRenderTarget failed: %s\n", SDL_GetError()); fflush(stdout);
+        }
+    }
+
+    // TEST: Draw test graphics WITHOUT backbuffer
+    // Skip backbuffer copy completely - just show test graphics!
+    if (flipCount < 3) {
+        printf("[DEBUG] TEST MODE: Drawing test graphics, SKIPPING backbuffer\n"); fflush(stdout);
+    }
+
+    // Red background
+    SDL_SetRenderDrawColor(g_SDLRenderer, 255, 0, 0, 255);
+    SDL_RenderClear(g_SDLRenderer);
+
+    // Big green rectangle in center to see SOMETHING
+    SDL_SetRenderDrawColor(g_SDLRenderer, 0, 255, 0, 255);
+    SDL_Rect testRect = {200, 150, 400, 300};
+    SDL_RenderFillRect(g_SDLRenderer, &testRect);
+
+    // White square in center
+    SDL_SetRenderDrawColor(g_SDLRenderer, 255, 255, 255, 255);
+    SDL_Rect textRect = {350, 250, 100, 100};
+    SDL_RenderFillRect(g_SDLRenderer, &textRect);
+
+    // SKIP backbuffer copy in test mode - it covers our test graphics with BLACK!
+    // DON'T copy backbuffer during testing!
+    if (false && backBuf && backBuf->texture) {  // ← DISABLED for testing
+        if (flipCount <= 5) {
+            printf("[DEBUG] Flip() - copying backbuffer (%p) to screen\n", backBuf->texture); fflush(stdout);
+        }
+        if (SDL_RenderCopy(g_SDLRenderer, backBuf->texture, nullptr, nullptr) != 0) {
+            if (flipCount <= 5) {
+                printf("[ERROR] SDL_RenderCopy failed: %s\n", SDL_GetError()); fflush(stdout);
+            }
+        }
+    }
+
+    // Present the rendered frame to the window
+    if (flipCount <= 5) {
+        printf("[DEBUG] Calling SDL_RenderPresent()\n"); fflush(stdout);
+    }
+    SDL_RenderPresent(g_SDLRenderer);
+    if (flipCount <= 5) {
+        printf("[DEBUG] SDL_RenderPresent() completed, error: %s\n",
+               SDL_GetError()[0] ? SDL_GetError() : "none"); fflush(stdout);
+    }
+
     return DD_OK;
 }
 
@@ -319,9 +401,39 @@ HRESULT SDL2Palette::SetEntries(DWORD flags, DWORD start, DWORD count, PALETTEEN
 // ============================================================================
 
 HRESULT SDL2DirectDraw::SetCooperativeLevel(HWND hwnd, DWORD flags) {
-    // SDL2 handles window cooperation internally
-    // Store fullscreen flag for later use
-    fullscreen = (flags & DDSCL_FULLSCREEN) != 0;
+    printf("[DEBUG] SetCooperativeLevel() called, hwnd=%p, flags=0x%X\n", hwnd, flags); fflush(stdout);
+
+    // CRITICAL FIX: Minimize and move Win32 window offscreen
+    // (ShowWindow(SW_HIDE) doesn't work with fullscreen windows!)
+    if (hwnd && !originalWin32Window) {
+        originalWin32Window = hwnd;
+        printf("[DEBUG] Minimizing Win32 window (hwnd=%p) and moving offscreen\n", hwnd); fflush(stdout);
+
+        // Move Win32 window way offscreen (negative coordinates)
+        SetWindowPos(hwnd, HWND_BOTTOM, -10000, -10000, 1, 1, SWP_NOACTIVATE);
+        ShowWindow(hwnd, SW_MINIMIZE);  // Minimize it too
+
+        printf("[DEBUG] Win32 window moved offscreen and minimized\n"); fflush(stdout);
+
+        // Make SDL window always on top and centered
+        if (window) {
+            SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+            SDL_SetWindowAlwaysOnTop(window, SDL_TRUE);
+            SDL_RaiseWindow(window);  // Bring to front
+            SDL_SetWindowInputFocus(window);  // Give it focus
+            printf("[DEBUG] SDL window positioned, raised and focused\n"); fflush(stdout);
+        }
+    }
+
+    // FORCE WINDOWED MODE for debugging - ignore fullscreen flag
+    fullscreen = false;
+    printf("[DEBUG] SetCooperativeLevel() - FORCING WINDOWED MODE (ignoring fullscreen flag)\n"); fflush(stdout);
+
+    // Keep window in windowed mode
+    if (window) {
+        SDL_SetWindowFullscreen(window, 0);  // 0 = windowed
+    }
+
     return DD_OK;
 }
 
@@ -356,9 +468,9 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
 
     printf("[DEBUG] Creating surface: %dx%d\n", width, height); fflush(stdout);
 
-    // Create SDL texture
+    // Create SDL texture with RGBA8888 format (compatible with loaded bitmaps)
     SDL_Texture* texture = SDL_CreateTexture(renderer,
-                                            SDL_PIXELFORMAT_ARGB8888,
+                                            SDL_PIXELFORMAT_RGBA8888,
                                             SDL_TEXTUREACCESS_TARGET,
                                             width, height);
     if (!texture) {
@@ -381,7 +493,7 @@ HRESULT SDL2DirectDraw::CreateSurface(DDSURFACEDESC2* desc, LPDIRECTDRAWSURFACE7
                 (desc->dwBackBufferCount > 0)) {
                 printf("[DEBUG] Creating BACKBUFFER\n"); fflush(stdout);
                 SDL_Texture* backTex = SDL_CreateTexture(renderer,
-                                                        SDL_PIXELFORMAT_ARGB8888,
+                                                        SDL_PIXELFORMAT_RGBA8888,
                                                         SDL_TEXTUREACCESS_TARGET,
                                                         width, height);
                 if (backTex) {
@@ -447,8 +559,10 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     }
     printf("[DEBUG] SDL_Init OK\n"); fflush(stdout);
 
-    // Create window with fixed size (like original game on XP)
-    Uint32 windowFlags = SDL_WINDOW_SHOWN;  // Removed RESIZABLE for stability
+    // Create SDL window (completely separate from any Win32 window)
+    printf("[DEBUG] Creating standalone SDL window\n"); fflush(stdout);
+
+    Uint32 windowFlags = SDL_WINDOW_SHOWN;
     if (fullscreen) {
         windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
@@ -457,7 +571,7 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                              width, height, windowFlags);
     if (!window) {
-        printf("[ERROR] SDL_CreateWindow FAILED!\n"); fflush(stdout);
+        printf("[ERROR] SDL_CreateWindow FAILED: %s\n", SDL_GetError()); fflush(stdout);
         SDL_Quit();
         return DDERR_GENERIC;
     }
@@ -506,7 +620,10 @@ HRESULT DirectDrawCreateEx(GUID* guid, LPVOID* ddraw, REFIID iid, IUnknown* unkO
 
     SDL2DirectDraw* dd = new SDL2DirectDraw();
 
-    // Initialize with default settings
+    // CRITICAL FIX: Initialize SDL window IMMEDIATELY here
+    // Don't wait for SetCooperativeLevel - we need window NOW
+    // This way we completely bypass Win32 window issues
+    printf("[DEBUG] Creating SDL window immediately (800x600)\n"); fflush(stdout);
     HRESULT hr = dd->Initialize(nullptr, 800, 600, false);
     if (FAILED(hr)) {
         printf("[ERROR] DirectDrawCreateEx() - Initialize FAILED!\n"); fflush(stdout);
@@ -578,20 +695,54 @@ IDirectDrawSurface7* DDLoadBitmap(IDirectDraw7* dd, LPCSTR bitmapPath, int width
         return nullptr;
     }
 
-    printf("[DEBUG] IMG_Load OK, surface: %dx%d\n", loadedSurface->w, loadedSurface->h); fflush(stdout);
-
-    // Convert surface to texture
-    printf("[DEBUG] Creating texture from surface\n"); fflush(stdout);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(g_SDLRenderer, loadedSurface);
+    printf("[DEBUG] IMG_Load OK, surface: %dx%d, format=%s\n",
+           loadedSurface->w, loadedSurface->h,
+           SDL_GetPixelFormatName(loadedSurface->format->format)); fflush(stdout);
 
     int w = loadedSurface->w;
     int h = loadedSurface->h;
-    SDL_FreeSurface(loadedSurface);
+
+    // CRITICAL FIX: Convert surface to RGBA8888 format if needed
+    // Old games use 8-bit paletted BMPs, need to convert to RGBA
+    SDL_Surface* convertedSurface = loadedSurface;
+    if (loadedSurface->format->format != SDL_PIXELFORMAT_RGBA8888 &&
+        loadedSurface->format->format != SDL_PIXELFORMAT_ARGB8888) {
+        printf("[DEBUG] Converting surface from %s to RGBA8888\n",
+               SDL_GetPixelFormatName(loadedSurface->format->format)); fflush(stdout);
+        convertedSurface = SDL_ConvertSurfaceFormat(loadedSurface, SDL_PIXELFORMAT_RGBA8888, 0);
+        SDL_FreeSurface(loadedSurface);  // Free original
+
+        if (!convertedSurface) {
+            printf("[ERROR] DDLoadBitmap() - SDL_ConvertSurfaceFormat failed: %s\n", SDL_GetError()); fflush(stdout);
+            return nullptr;
+        }
+        printf("[DEBUG] Conversion OK\n"); fflush(stdout);
+    }
+
+    // CRITICAL FIX: Create texture with TARGET access so it can be used as render target
+    // SDL_CreateTextureFromSurface creates STATIC textures which cannot be render targets!
+    printf("[DEBUG] Creating texture with TARGET access (%dx%d)\n", w, h); fflush(stdout);
+    SDL_Texture* texture = SDL_CreateTexture(g_SDLRenderer,
+                                             SDL_PIXELFORMAT_RGBA8888,
+                                             SDL_TEXTUREACCESS_TARGET,
+                                             w, h);
 
     if (!texture) {
-        printf("[ERROR] DDLoadBitmap() - SDL_CreateTextureFromSurface failed: %s\n", SDL_GetError()); fflush(stdout);
+        printf("[ERROR] DDLoadBitmap() - SDL_CreateTexture failed: %s\n", SDL_GetError()); fflush(stdout);
+        SDL_FreeSurface(convertedSurface);
         return nullptr;
     }
+
+    // Copy loaded image data into the texture
+    printf("[DEBUG] Copying surface data to texture\n"); fflush(stdout);
+    if (SDL_UpdateTexture(texture, nullptr, convertedSurface->pixels, convertedSurface->pitch) != 0) {
+        printf("[ERROR] DDLoadBitmap() - SDL_UpdateTexture failed: %s\n", SDL_GetError()); fflush(stdout);
+        SDL_DestroyTexture(texture);
+        SDL_FreeSurface(convertedSurface);
+        return nullptr;
+    }
+
+    SDL_FreeSurface(convertedSurface);
 
     printf("[DEBUG] Texture created, creating SDL2Surface wrapper\n"); fflush(stdout);
     // Create surface wrapper

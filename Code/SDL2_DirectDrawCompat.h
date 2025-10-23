@@ -320,12 +320,14 @@ struct SDL2DirectDraw {
     int             screenWidth;
     int             screenHeight;
     bool            fullscreen;
+    HWND            originalWin32Window;  // Store original Win32 window to destroy it
     int             refCount;
 
     SDL2DirectDraw()
         : window(nullptr), renderer(nullptr),
           primarySurface(nullptr), backBuffer(nullptr), palette(nullptr),
-          screenWidth(800), screenHeight(600), fullscreen(false), refCount(1) {}
+          screenWidth(800), screenHeight(600), fullscreen(false),
+          originalWin32Window(nullptr), refCount(1) {}
 
     ~SDL2DirectDraw() {
         if (renderer) SDL_DestroyRenderer(renderer);
