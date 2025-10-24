@@ -1,0 +1,98 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# C++ files
+*.cpp text linguist-language=C++
+*.cc text linguist-language=C++
+*.cxx text linguist-language=C++
+*.h text linguist-language=C++
+*.hpp text linguist-language=C++
+*.hxx text linguist-language=C++
+*.c text linguist-language=C
+*.C text linguist-language=C++
+
+# Build files
+CMakeLists.txt text linguist-language=CMake
+*.cmake text linguist-language=CMake
+
+# Documentation
+*.md text linguist-documentation
+*.txt text
+
+# Configuration
+*.json text
+*.yml text
+*.yaml text
+*.xml text
+*.config text
+*.ini text
+
+# Scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+# Graphics (binary)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.ico binary
+*.tiff binary
+*.tif binary
+
+# Audio (binary)
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.flac binary
+
+# Fonts
+*.ttf binary
+*.otf binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+
+# Executables
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Visual Studio
+*.sln text eol=crlf linguist-generated
+*.vcxproj text eol=crlf linguist-generated
+*.vcxproj.filters text eol=crlf linguist-generated
+*.vcproj text eol=crlf linguist-generated
+
+# Ignore vendor files in language statistics
+Bitmaps/* linguist-vendored
+RunDir/Sound/* linguist-vendored
+RunDir/Documentation/* linguist-documentation
+Code/Old?Code/* linguist-vendored
+
+# Mark main language
+*.cpp linguist-language=C++
+*.h linguist-language=C++
+
+# Ensure Windows line endings for Windows-specific files
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+*.vcxproj.filters text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Ensure Unix line endings for Unix-specific files
+*.sh text eol=lf
+
+# Diff settings for better readability
+*.cpp diff=cpp
+*.h diff=cpp
+*.md diff=markdown
