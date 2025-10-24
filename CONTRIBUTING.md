@@ -159,7 +159,11 @@ This approach minimizes changes to the original game code while enabling modern 
 
 ## 🤝 Code of Conduct
 
-Please be respectful and constructive in all interactions:
+This project adheres to a Code of Conduct that all contributors are expected to follow. Please read the full text so that you can understand what actions will and will not be tolerated.
+
+📖 **[Read the full Code of Conduct](CODE_OF_CONDUCT.md)**
+
+In summary:
 - Be welcoming to newcomers
 - Accept constructive criticism gracefully
 - Focus on what's best for the project
