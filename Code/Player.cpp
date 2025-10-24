@@ -21,6 +21,9 @@ Player * ThePlayers[2];
 void Player::SetVariables(){
 	Cluster = new SpecialClusterBomb(this);
 	sClone = new SpecialClone(this);
+	// CRITICAL: Initialize pointers to prevent crash on uninitialized memory
+	ThePlane = nullptr;
+	TheMissile = nullptr;
 }
 
 Player::Player(int num, int ADDMORTAL){

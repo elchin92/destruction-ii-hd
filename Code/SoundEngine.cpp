@@ -18,12 +18,13 @@ SoundEngine * TheSoundEngine;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-SoundEngine::SoundEngine() 
+SoundEngine::SoundEngine()
 {
 	ACTIVE=FALSE;
 	MaxVolume=0;
 	TheSounds=NULL;
 	TheActors = NULL;
+	lpDS = NULL;  // CRITICAL FIX: Initialize to NULL to prevent heap corruption!
 
 	UZ2();
 	Zero(FirstAddedSound,NumberOfSounds);
@@ -242,13 +243,30 @@ HRESULT SoundEngine::FreeDirectSound()
 		ss=ss->nextSoundSource;
 		delete kill;
 	}
+
+	// CRITICAL FIX: Nullify TheSounds to prevent dangling pointers
+	// When sound is re-enabled, new SoundSources won't link to freed memory
+	TheSounds = NULL;
+
 	ss = TheActors;
 	while(ss){
 		ss->StopPlaying();
 		ss=ss->nextSoundSource;
 	}
 
-    SAFE_RELEASE( lpDS ); 
+	// CRITICAL FIX: Nullify TheActors to prevent dangling pointers
+	TheActors = NULL;
+
+	// CRITICAL FIX: Clear tracking arrays to prevent stale references
+	// This prevents AllowedToPlay() from accessing freed SoundSources
+	for (int snd = 0; snd < NumberOfSounds; ++snd) {
+		FirstAddedSound[snd] = 0;
+		for (int slot = 0; slot < 2; ++slot) {
+			PlayingSounds[snd][slot] = NULL;
+		}
+	}
+
+    SAFE_RELEASE( lpDS );
 
     // Release COM
     CoUninitialize();

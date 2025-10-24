@@ -8,9 +8,9 @@
 #include "Debugger.h"
 #include <algorithm> // C++20: for std::min
 
-Mortal * TheMortals;
-Mortal * TheDeadMortals;
-Mortal *** TheMortalQuadrants;
+Mortal * TheMortals = nullptr;
+Mortal * TheDeadMortals = nullptr;
+Mortal *** TheMortalQuadrants = nullptr;
 
 Mortal::Mortal(int X, int Y, int iTeam){
 	// Dead player

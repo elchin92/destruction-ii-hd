@@ -150,10 +150,14 @@ int SoundSource::StartPlaying(){
 	return TRUE;
 }
 void SoundSource::StopPlaying(){
+	// CRITICAL FIX: Delete TheSound BEFORE checking if sound is active!
+	// Otherwise when sound is disabled, TheSound is NOT deleted here,
+	// but WILL BE deleted in ~SoundSource() → double-free!
+	SAFE_DELETE(TheSound);
+
 	if(!TheSoundEngine->SoundActivated())
 		return;
 
-	SAFE_DELETE(TheSound);
 	HasStopped();
 
 }

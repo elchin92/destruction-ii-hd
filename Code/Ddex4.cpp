@@ -46,6 +46,28 @@ using namespace std; // For ofstream, ifstream, endl
 #include "ScoreTableEntry.h"
 #include "Aviator.h"
 
+// CRITICAL DEBUG: Global constructor to log BEFORE WinMain
+// This helps diagnose if the problem is in C++ initialization or in WinMain
+struct GlobalInitLogger {
+	GlobalInitLogger() {
+		FILE* log = fopen("global_init.log", "w");
+		if (log) {
+			fprintf(log, "[DEBUG] Global constructors executing BEFORE WinMain\n");
+			fflush(log);
+			fclose(log);
+		}
+	}
+	~GlobalInitLogger() {
+		FILE* log = fopen("global_init.log", "a");
+		if (log) {
+			fprintf(log, "[DEBUG] Global destructors executing AFTER WinMain\n");
+			fflush(log);
+			fclose(log);
+		}
+	}
+};
+static GlobalInitLogger g_initLogger;
+
 Game * TheGame;
 
 int SETTINGDISPLAYMODE;
@@ -558,20 +580,78 @@ WinMain(HINSTANCE hInstance,
         LPSTR lpCmdLine,
         int nCmdShow)
 {
+	// CRITICAL DEBUG: File logging to diagnose immediate exit
+	FILE* startLog = fopen("game_startup.log", "w");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] WinMain() START\n");
+		fflush(startLog);
+		fclose(startLog);
+	}
+
     MSG                         msg;
 	HRESULT						hRet;
 
-	
+	startLog = fopen("game_startup.log", "a");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] Creating TheGame object...\n");
+		fflush(startLog);
+		fclose(startLog);
+	}
+
 	TheGame = new Game();
+
+	startLog = fopen("game_startup.log", "a");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] TheGame created successfully\n");
+		fflush(startLog);
+		fclose(startLog);
+	}
+
 	Beacon(-9876);
+
+	startLog = fopen("game_startup.log", "a");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] Calling TheGame->CreateObjects()...\n");
+		fflush(startLog);
+		fclose(startLog);
+	}
+
 	TheGame->CreateObjects();
-	
+
+	startLog = fopen("game_startup.log", "a");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] TheGame->CreateObjects() completed\n");
+		fflush(startLog);
+		fclose(startLog);
+	}
+
 //	char tada[100];
 //	sprintf(tada,"Whisper min = %i, Whisper max = %i",Distances[(int)dWhisper][0],Distances[(int)dWhisper][1]);
 //	MessageBox(TheGame->hWnd," Is it correct? ",tada,0);
+
+	startLog = fopen("game_startup.log", "a");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] Calling InitApp()...\n");
+		fflush(startLog);
+		fclose(startLog);
+	}
+
     if (InitApp(hInstance, nCmdShow) != DD_OK){
+		startLog = fopen("game_startup.log", "a");
+		if (startLog) {
+			fprintf(startLog, "[ERROR] InitApp() FAILED!\n");
+			fflush(startLog);
+			fclose(startLog);
+		}
 		TheGame->UserMessage("Error","General InitApp Failure");
         return FALSE;
+	}
+
+	startLog = fopen("game_startup.log", "a");
+	if (startLog) {
+		fprintf(startLog, "[DEBUG] InitApp() SUCCESS - entering main loop\n");
+		fflush(startLog);
+		fclose(startLog);
 	}
 	
 	while (TRUE)
@@ -585,6 +665,10 @@ WinMain(HINSTANCE hInstance,
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+
+		// CRITICAL: Exit loop if TheGame was deleted (on WM_DESTROY)
+		if (!TheGame)
+			break;
 
    		if (TheGame->ACTIVE)
         {
@@ -2346,6 +2430,9 @@ void Game::InterpretSettings(){
 
 
 void Game::DeleteTheQuadrants(){
+	// Guard against double-free: return early if already freed
+	if (!TheShotQuadrants || !TheMortalQuadrants) return;
+
 	if(OldWorldSize){
 		Beacon(77766677);
 		for(int d=0;d<OldWorldSize*11;d++){
@@ -2354,7 +2441,12 @@ void Game::DeleteTheQuadrants(){
 		}
 		delete[] TheShotQuadrants;
 		delete[] TheMortalQuadrants;
-	}	
+
+		// Clear dangling pointers and reset size to prevent double-free
+		TheShotQuadrants = nullptr;
+		TheMortalQuadrants = nullptr;
+		OldWorldSize = 0;
+	}
 }
 void Game::AllocateNewQuadrants(){
 

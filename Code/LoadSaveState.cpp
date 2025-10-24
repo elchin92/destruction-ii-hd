@@ -28,6 +28,9 @@ void LoadSaveState::Initialize(){
 		ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 		PROOF_QUALITY, VARIABLE_PITCH,"Arial");
 
+	// CRITICAL: Initialize LoadSaveMenu to prevent crash on uninitialized pointer
+	LoadSaveMenu = nullptr;
+
 	UserMsgBox = new InfoBox(400,300-17, 0, 0, &MsgFont, mcWhite,TA_CENTER);
 }
 

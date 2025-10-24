@@ -9,8 +9,8 @@
 
 int sdl=1, scr=1;
 
-shot * TheShots;
-shot *** TheShotQuadrants;
+shot * TheShots = nullptr;
+shot *** TheShotQuadrants = nullptr;
 
 shot::shot(int StartX, int StartY,  double iSpeed, double Ask,BulletType ibType, int Damage, Shooter * iOwner, RegExpType irType, int DontHitOwner){
 

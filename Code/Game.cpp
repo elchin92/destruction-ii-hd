@@ -31,6 +31,11 @@ using namespace std; // For ofstream, ifstream, endl
 
 Game::Game(){
 	SoundStatus=SS_NOSOUND;
+
+	// CRITICAL: Initialize quadrant pointers/sizes to prevent heap corruption
+	OldWorldSize = 0;
+	WorldSize = 0;
+
 	Initialize("Game");
 //	RegisterItem("NumberOfPlayers",&NumberOfPlayers, sizeof(NumberOfPlayers));
 //	RegisterItem("TenElemArray",&teArray[0], sizeof(teArray[0])*10);

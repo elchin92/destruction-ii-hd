@@ -249,14 +249,27 @@ struct SDL2Surface {
           attachedBackBuffer(nullptr), refCount(1) {}
 
     ~SDL2Surface() {
+        // CRITICAL FIX: Release attached surfaces like DirectDraw does
+        // Primary surface automatically releases its attached backbuffer
+        if (attachedBackBuffer) {
+            attachedBackBuffer->Release();  // Decrement refCount
+            attachedBackBuffer = nullptr;
+        }
+
         if (texture) SDL_DestroyTexture(texture);
         if (surface) SDL_FreeSurface(surface);
     }
 
     // COM-like interface
-    ULONG AddRef() { return ++refCount; }
+    ULONG AddRef() {
+        ++refCount;
+        printf("[DEBUG] SDL2Surface::AddRef() this=%p, refCount=%d\n", this, refCount); fflush(stdout);
+        return refCount;
+    }
     ULONG Release() {
+        printf("[DEBUG] SDL2Surface::Release() this=%p, refCount=%d -> %d\n", this, refCount, refCount-1); fflush(stdout);
         if (--refCount == 0) {
+            printf("[DEBUG] SDL2Surface::Release() DELETING this=%p\n", this); fflush(stdout);
             delete this;
             return 0;
         }

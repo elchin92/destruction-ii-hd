@@ -135,13 +135,15 @@ NewStore::~NewStore(){
 	DeleteObject(ShopFont24b);
 
 	delete ShortInfoBox;
-	delete CurrentItemBox[0];		
-	delete WeaponBox[0];	
+	delete CurrentItemBox[0];
+	delete WeaponBox[0];
 	delete CurrentItemBox[1];
 	delete WeaponBox[1];
 	delete CurrentItemBox[2];
 	delete WeaponBox[2];
-	delete UserMsgBox;
+	// NOTE: UserMsgBox is deleted by base class GameState::~GameState()
+	// Deleting it here causes double-free crash!
+	// delete UserMsgBox;
 	delete MiscBox;
 	delete ArmorBox;
 	delete PriceBox;

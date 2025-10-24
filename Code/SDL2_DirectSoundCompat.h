@@ -233,9 +233,11 @@ struct SDL2DirectSound {
         : initialized(false), hwnd(nullptr), cooperativeLevel(0), refCount(1) {}
 
     ~SDL2DirectSound() {
-        for (auto buffer : buffers) {
-            if (buffer) buffer->Release();
-        }
+        // NOTE: DO NOT release buffers here!
+        // Buffers are manually released by SoundEngine::FreeDirectSound()
+        // before lpDS->Release() is called. Releasing them here causes double-free!
+
+        // Only cleanup SDL mixer
         if (initialized) {
             Mix_CloseAudio();
         }

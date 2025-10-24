@@ -38,6 +38,7 @@ void ButtonGameState::BlitButtonMenu(){
 
 ButtonGameState::~ButtonGameState(){
 	SAFE_DELETE(ButtonMenu);
-	SAFE_DELETE(UserMsgBox);
+	// NOTE: UserMsgBox is deleted by base class GameState::~GameState()
+	// Deleting it here causes double-free crash!
 }
 
