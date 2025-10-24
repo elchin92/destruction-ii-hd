@@ -15,7 +15,7 @@
 
 ### *"Некоторые игры живут в наших сердцах вечно..."*
 
-**[🇬🇧 English Version](README.md)** | **[📖 Документация](PROGRESS.md)** | **[🤝 Как помочь](CONTRIBUTING.md)**
+**[🇬🇧 English Version](README.md)** | **[📖 Документация](PROGRESS_RU.md)** | **[🤝 Как помочь](CONTRIBUTING_RU.md)**
 
 [![Поддержать](https://img.shields.io/badge/Поддержать%20на-Boosty-F15E2C?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA0klEQVQokWNgoBAwUqKJ4f///38y/P//n4GBgeE/AwPDfwYGhj8M////Y2BgYPhLSgD9+/fvP8P///8ZGBgY/jMw/P/PwMDwj4GB4Q8DAwMDIzMzMyMjIyMDIyMDEyMjIxMTExMjMzMzI1Zb/v//z8DAwPCfgYHhPwMDw38GBob/DAwM/xkYGP4zMDD8Z2Bg+M/AwPCPAZtGRkZGBiYmJkZmZmZGJiYmRmZmZkYmJiYGHEGGHIeMjIyYGmE24tOETSNOjSQnOqI0EmMrVU0kNtCBAQC8aDrDhlrWvAAAAABJRU5ErkJggg==)](https://boosty.to/destruction2hd)
 
@@ -119,7 +119,7 @@
 **Последнее обновление**: 24 октября 2025
 **Статус**: 🟢 ПРОРЫВ! МЕНЮ ИГРЫ ВИДНО НА WINDOWS 11! 🎉
 
-📋 **Детальный прогресс**: См. [PROGRESS.md](PROGRESS.md)
+📋 **Детальный прогресс**: См. [PROGRESS_RU.md](PROGRESS_RU.md)
 
 ### ✅ Завершено:
 - ✅ **МЕНЮ ИГРЫ ВИДНО!** Первый раз работает на Windows 11! 🎉
