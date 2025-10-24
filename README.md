@@ -48,17 +48,17 @@
 
 ## 📖 A Personal Story & Game Preservation Mission
 
-**Destruction II HD** is an open-source resurrection project dedicated to preserving and modernizing the legendary **turn-based tactical artillery tank game** created by Johan Torp (Nocturnal Development) in 2003. This comprehensive DirectX 7 to SDL2 port brings classic scorched-earth style combat—featuring destructible terrain, physics-based projectiles, 45+ weapons, and local multiplayer—to Windows 10/11 with full x64 architecture support.
+**Destruction II HD** is an open-source resurrection project dedicated to preserving and modernizing the legendary **turn-based tactical artillery tank game** created by Johan Torp (Nocturnal Development) during 2001-2003 and released January 20, 2003 (v1.00). This comprehensive DirectX 7 to SDL2 port brings classic scorched-earth style combat—featuring destructible terrain, physics-based projectiles, 45+ weapons, and local multiplayer—to Windows 10/11 with full x64 architecture support.
 
 My cousin and I spent countless hours battling in this game during our youth (ages 10-15). It wasn't just a game for us—it was our tradition, our bonding ritual. Even as adults, every reunion meant firing up Destruction II, returning to those carefree times. The pixelated tanks, explosive terrain destruction, and simple yet deep mechanics were woven into the fabric of our friendship.
 
-**But life is unpredictable. My cousin passed away in 2023...**
+**But life is unpredictable. My cousin passed away...**
 
 I can't bring him back, but I can resurrect our game and preserve those precious memories. Every line of code in this project is a tribute to our shared joy. This is why **Destruction II HD** exists—not just as a technical achievement, but as an act of love and remembrance.
 
 ## 🎮 About Destruction II
 
-**Destruction II** is a legendary **turn-based tactical artillery tank game** created by Johan Torp (Nocturnal Development) in 2001-2003. Released as freeware, it captured the hearts of thousands of players worldwide, becoming a beloved classic in the **scorched earth** genre (similar to Worms, Pocket Tanks, and the original Scorched Earth).
+**Destruction II** is a legendary **turn-based tactical artillery tank game** developed by Johan Torp (Nocturnal Development) from summer 2001 to January 2003. Originally released as shareware on January 20, 2003 (v1.00), with source code later published as freeware on December 7, 2004, it captured the hearts of thousands of players worldwide, becoming a beloved classic in the **scorched earth** genre (similar to Worms, Pocket Tanks, and the original Scorched Earth).
 
 ### 🎯 Core Gameplay Features:
 - **⚔️ Turn-based tactical combat** with **fully destructible terrain**
@@ -248,8 +248,16 @@ cd Debug
 
 ## 📜 Version History
 
-- **v0.1** (in development) - Initial port to modern systems
-- **v1.0** (2003) - Original version by Johan Torp
+### Original Game Timeline:
+- **Destruction I v1.00** (April 29, 2001) - The original game by Johan Torp, ~50,000 downloads
+- **Destruction II Development** (Summer 2001 - January 2003) - 1.5 years of development
+  - Alpha 100-103.1 (October-November 2002) - Alpha testing phase
+  - Beta 1-3 (December 2002 - January 2003) - Beta testing phase
+- **Destruction II v1.00** (January 20, 2003) - Official shareware release
+- **Source Code Release** (December 7, 2004) - Published as freeware on SourceForge by request
+
+### HD Resurrection Project:
+- **v0.1** (October 2025, in development) - Initial DirectX 7 → SDL2 port for Windows 10/11 x64
 
 ## ❤️ Acknowledgments
 
