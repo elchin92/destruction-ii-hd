@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640">
+  <defs>
+    <!-- Military-themed gradient background -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Accent glow -->
+    <radialGradient id="glowGradient" cx="50%" cy="30%">
+      <stop offset="0%" style="stop-color:#e94560;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#e94560;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Text shadow filter -->
+    <filter id="textShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="2" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bgGradient)"/>
+  <rect width="1280" height="640" fill="url(#glowGradient)"/>
+
+  <!-- Decorative grid pattern -->
+  <g opacity="0.1" stroke="#ffffff" stroke-width="1" fill="none">
+    <line x1="0" y1="160" x2="1280" y2="160"/>
+    <line x1="0" y1="320" x2="1280" y2="320"/>
+    <line x1="0" y1="480" x2="1280" y2="480"/>
+    <line x1="320" y1="0" x2="320" y2="640"/>
+    <line x1="640" y1="0" x2="640" y2="640"/>
+    <line x1="960" y1="0" x2="960" y2="640"/>
+  </g>
+
+  <!-- Decorative corner elements -->
+  <g stroke="#e94560" stroke-width="3" fill="none" opacity="0.8">
+    <!-- Top left -->
+    <polyline points="40,80 40,40 80,40"/>
+    <!-- Top right -->
+    <polyline points="1240,40 1200,40 1200,80"/>
+    <!-- Bottom left -->
+    <polyline points="40,560 40,600 80,600"/>
+    <!-- Bottom right -->
+    <polyline points="1200,560 1200,600 1240,600"/>
+  </g>
+
+  <!-- Main Title -->
+  <text x="640" y="220"
+        font-family="'Arial Black', Arial, sans-serif"
+        font-size="96"
+        font-weight="900"
+        fill="#ffffff"
+        text-anchor="middle"
+        filter="url(#textShadow)">
+    DESTRUCTION II
+  </text>
+
+  <!-- Subtitle HD -->
+  <text x="1040" y="200"
+        font-family="Arial, sans-serif"
+        font-size="48"
+        font-weight="bold"
+        fill="#e94560"
+        text-anchor="start">
+    HD
+  </text>
+
+  <!-- Resurrection Project -->
+  <text x="640" y="290"
+        font-family="Arial, sans-serif"
+        font-size="42"
+        font-weight="300"
+        fill="#53a8b6"
+        text-anchor="middle"
+        letter-spacing="4">
+    RESURRECTION PROJECT
+  </text>
+
+  <!-- Tagline -->
+  <text x="640" y="360"
+        font-family="Arial, sans-serif"
+        font-size="28"
+        fill="#b8b8b8"
+        text-anchor="middle"
+        font-style="italic">
+    "Some games live in our hearts forever..."
+  </text>
+
+  <!-- Description -->
+  <text x="640" y="420"
+        font-family="Arial, sans-serif"
+        font-size="24"
+        fill="#ffffff"
+        text-anchor="middle">
+    Classic Turn-Based Artillery Tank Game (2003)
+  </text>
+
+  <text x="640" y="455"
+        font-family="Arial, sans-serif"
+        font-size="24"
+        fill="#ffffff"
+        text-anchor="middle">
+    Reborn for Windows 10/11
+  </text>
+
+  <!-- Tech Stack -->
+  <g transform="translate(640, 510)">
+    <!-- DirectX to SDL2 -->
+    <g transform="translate(-280, 0)">
+      <rect x="-5" y="-22" width="120" height="35" rx="5" fill="#0f3460" stroke="#53a8b6" stroke-width="2"/>
+      <text x="55" y="0" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle">DirectX 7</text>
+    </g>
+
+    <!-- Arrow -->
+    <text x="-110" y="0" font-family="Arial, sans-serif" font-size="24" fill="#e94560" text-anchor="middle">→</text>
+
+    <!-- SDL2 -->
+    <g transform="translate(-50, 0)">
+      <rect x="-5" y="-22" width="80" height="35" rx="5" fill="#e94560" stroke="#ffffff" stroke-width="2"/>
+      <text x="35" y="0" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="bold">SDL2</text>
+    </g>
+
+    <!-- C++20 -->
+    <g transform="translate(80, 0)">
+      <rect x="-5" y="-22" width="90" height="35" rx="5" fill="#0f3460" stroke="#53a8b6" stroke-width="2"/>
+      <text x="40" y="0" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle">C++20</text>
+    </g>
+
+    <!-- x64 -->
+    <g transform="translate(210, 0)">
+      <rect x="-5" y="-22" width="70" height="35" rx="5" fill="#0f3460" stroke="#53a8b6" stroke-width="2"/>
+      <text x="30" y="0" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle">x64</text>
+    </g>
+  </g>
+
+  <!-- Bottom tagline -->
+  <text x="640" y="590"
+        font-family="Arial, sans-serif"
+        font-size="20"
+        fill="#e94560"
+        text-anchor="middle">
+    Made with 💔 and memories | github.com/elchin92/destruction_II_hd
+  </text>
+</svg>
