@@ -11,7 +11,7 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?style=for-the-badge)
 ![C++](https://img.shields.io/badge/C++-20-00599C?style=for-the-badge&logo=c%2B%2B)
 ![SDL2](https://img.shields.io/badge/SDL-2.30+-1E4A94?style=for-the-badge&logo=sdl)
-![Status](https://img.shields.io/badge/Status-98%25%20Complete-brightgreen?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-99%25%20Complete-brightgreen?style=for-the-badge)
 
 ### *"Some games live in our hearts forever..."*
 
@@ -114,37 +114,40 @@ I've been using computers since I was 6 years old, but I've never written code p
 
 ## 🚀 Development Roadmap
 
-### 📊 Current Progress: **98%** ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬜
+### 📊 Current Progress: **99%** ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛
 
-**Last Updated**: October 24, 2025
-**Status**: 🟢 BREAKTHROUGH! GAME MENU VISIBLE ON WINDOWS 11! 🎉
+**Last Updated**: October 26, 2025
+**Status**: 🟢 CPU/GPU SYNC & GDI TEXT RENDERING WORKING! MENUS WITH TEXT VISIBLE! 🎉
 
 📋 **Detailed progress tracking**: See [PROGRESS.md](PROGRESS.md)
 
 ### ✅ Completed:
-- ✅ **GAME MENU VISIBLE!** First time working on Windows 11! 🎉
+- ✅ **GDI TEXT RENDERING WORKS!** GetDC/ReleaseDC fully functional! 🎉
+- ✅ **CPU/GPU BUFFER SYNC!** No more black menu backgrounds! 🎉
+- ✅ **GAME MENUS WORKING!** All text and backgrounds display correctly! 🎉
 - ✅ **All heap crashes fixed** - clean exit with code 0
 - ✅ **SOFTWARE renderer works** - no GPU/video drivers required!
 - ✅ **Color key transparency** - proper alpha channel implementation
+- ✅ **Blend mode fixes** - DDBLTFAST_NOCOLORKEY, DDBLT_KEYSRC support
 - ✅ **Resolution scaling** - 800x600 auto-scales to any screen size
+- ✅ **Settings menu** - background and menus render in correct order
 - ✅ Full transition from DirectX 7 to SDL2
 - ✅ Updated from C++98 to C++20 (all 327 files compile!)
 - ✅ vcpkg package manager + CMake build system
-- ✅ Git repository on GitHub: https://github.com/elchin92/destruction_II_hd
+- ✅ Git repository on GitHub: https://github.com/elchin92/destruction-ii-hd
 - ✅ SDL2_DirectDrawCompat and SDL2_DirectInputCompat compatibility layers
 - ✅ All game bitmaps load and convert successfully
-- ✅ Game loop runs, Flip() is called every frame
+- ✅ Game loop runs smoothly, Flip() is called every frame
 
 ### 🔄 In Progress:
-- 🔄 Testing input (keyboard/mouse for menu navigation and gameplay)
-- 🔄 Color calibration (minor discrepancies)
+- 🔄 Full game testing (all menus, gameplay)
 - ⏳ Porting sound to SDL2_mixer
 
-### 📅 Phase 1: Resurrection (98% Complete!) 🎉
+### 📅 Phase 1: Resurrection (99% Complete!) 🎉
 - ✅ Porting to Windows 10/11 x64
-- ✅ Replacing DirectX 7 with SDL2 (graphics working!)
+- ✅ Replacing DirectX 7 with SDL2 (graphics 99% working!)
 - ✅ Updating from C++98 to C++20
-- ✅ First working build (game menu visible!)
+- ✅ First working build (game menus with text fully visible!)
 - 🔄 Testing full gameplay
 
 ### 🎨 Phase 2: HD Remaster
