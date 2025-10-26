@@ -380,17 +380,20 @@ void Settings::CreateGameSetupItems(){
 void Settings::Blit(){
 	//TheGame->BlankScreen();
 	Beacon(234934);
-	SettingsMenu->BlitMenu();
-	Beacon(234934);
-	EnemySetupMenu->BlitMenu();
-	Beacon(234937);
 
+	// CRITICAL FIX: Draw background FIRST, then menu on top
+	// Otherwise background overwrites all menu text and graphics
 	TheGame->rcRect.left = 0;
 	TheGame->rcRect.top = 0;
 	TheGame->rcRect.right = 800;
 	TheGame->rcRect.bottom = 600;
-
 	TheGame->BlitSetRc(0,0,&TheGame->g_pDDSBackground);
+
+	// Now draw menus on top of background
+	SettingsMenu->BlitMenu();
+	Beacon(234934);
+	EnemySetupMenu->BlitMenu();
+	Beacon(234937);
 
 }
 

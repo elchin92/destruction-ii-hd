@@ -243,10 +243,18 @@ struct SDL2Surface {
     // RefCounting for COM-like interface
     int             refCount;
 
+    // GDI support for GetDC/ReleaseDC (text rendering)
+    HBITMAP         hBitmap;        // DIB Section bitmap
+    HDC             hdc;            // Device context for GDI drawing
+    void*           dibPixels;      // Pointer to DIB pixel data
+    bool            dcActive;       // True when GetDC has been called
+    SDL_Texture*    streamingTexture; // Cached streaming texture for uploads (avoids create/destroy every frame)
+
     SDL2Surface(SDL_Texture* tex, int w, int h)
         : texture(tex), surface(nullptr), width(w), height(h),
           colorKey(0), colorKeyEnabled(false), isLocked(false),
-          attachedBackBuffer(nullptr), refCount(1) {}
+          attachedBackBuffer(nullptr), refCount(1),
+          hBitmap(nullptr), hdc(nullptr), dibPixels(nullptr), dcActive(false), streamingTexture(nullptr) {}
 
     ~SDL2Surface() {
         // CRITICAL FIX: Release attached surfaces like DirectDraw does
@@ -254,6 +262,20 @@ struct SDL2Surface {
         if (attachedBackBuffer) {
             attachedBackBuffer->Release();  // Decrement refCount
             attachedBackBuffer = nullptr;
+        }
+
+        // Clean up GDI resources
+        if (hdc) {
+            DeleteDC(hdc);
+            hdc = nullptr;
+        }
+        if (hBitmap) {
+            DeleteObject(hBitmap);
+            hBitmap = nullptr;
+        }
+        if (streamingTexture) {
+            SDL_DestroyTexture(streamingTexture);
+            streamingTexture = nullptr;
         }
 
         if (texture) SDL_DestroyTexture(texture);
@@ -416,6 +438,8 @@ HRESULT DDSetColorKey(IDirectDrawSurface7* surface, COLORREF rgb);
 // Blit flags
 #define DDBLT_WAIT                      0x01000000
 #define DDBLT_COLORFILL                 0x00000400
+#define DDBLT_KEYSRC                    0x00008000
+#define DDBLT_KEYSRCOVERRIDE            0x00010000
 #define DDBLTFAST_WAIT                  0x00000010
 #define DDBLTFAST_NOCOLORKEY            0x00000000
 #define DDBLTFAST_SRCCOLORKEY           0x00000008

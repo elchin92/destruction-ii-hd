@@ -13,6 +13,7 @@
 #include <cstring>
 #include <string>
 #include <cstdarg>
+#include <unordered_map>
 
 // DirectDraw error codes not defined in Win32 headers
 #ifndef DDERR_INVALIDPARAMS
@@ -94,14 +95,58 @@ HRESULT SDL2Surface::BltFast(DWORD x, DWORD y, LPDIRECTDRAWSURFACE7 src, RECT* s
     sdlDestRect.w = sdlSrcRect.w;
     sdlDestRect.h = sdlSrcRect.h;
 
-    // Handle color key transparency
-    if (srcSurface->colorKeyEnabled && !(flags & DDBLTFAST_NOCOLORKEY)) {
-        SDL_SetTextureBlendMode(srcSurface->texture, SDL_BLENDMODE_BLEND);
+    // CRITICAL FIX: Dynamically switch blend mode based on color key flag
+    // When DDBLTFAST_NOCOLORKEY is set, DirectDraw ignores alpha channel entirely
+    // This prevents "ghosting" when transitioning between screens
+    if (srcSurface->colorKeyEnabled) {
+        SDL_BlendMode mode = (flags & DDBLTFAST_NOCOLORKEY) ?
+            SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND;
+        SDL_SetTextureBlendMode(srcSurface->texture, mode);
     }
 
-    // Perform the blit
+    // Perform the GPU blit
     if (SDL_RenderCopy(g_SDLRenderer, srcSurface->texture, &sdlSrcRect, &sdlDestRect) != 0) {
         return DDERR_GENERIC;
+    }
+
+    // CRITICAL FIX: Also update CPU surface to keep it in sync with GPU
+    // This ensures GetDC sees the latest background when copying to DIB
+
+    // Create CPU surface if it doesn't exist
+    if (!this->surface) {
+        this->surface = SDL_CreateRGBSurface(0, width, height, 32,
+                                            0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    }
+
+    if (this->surface) {
+        if (srcSurface->surface) {
+            // Both surfaces have CPU data - fast path
+            SDL_BlitSurface(srcSurface->surface, &sdlSrcRect, this->surface, &sdlDestRect);
+        } else {
+            // Source has no CPU copy - read from GPU (slower fallback)
+            SDL_SetRenderTarget(g_SDLRenderer, this->texture);
+
+            void* pixels = nullptr;
+            int pitch = 0;
+            if (SDL_LockTexture(this->texture, &sdlDestRect, &pixels, &pitch) == 0) {
+                // Copy GPU pixels to CPU surface
+                if (SDL_MUSTLOCK(this->surface)) SDL_LockSurface(this->surface);
+
+                Uint8* srcPixels = (Uint8*)pixels;
+                Uint8* dstPixels = (Uint8*)this->surface->pixels +
+                                   sdlDestRect.y * this->surface->pitch +
+                                   sdlDestRect.x * 4;
+
+                for (int row = 0; row < sdlDestRect.h; row++) {
+                    memcpy(dstPixels, srcPixels, sdlDestRect.w * 4);
+                    srcPixels += pitch;
+                    dstPixels += this->surface->pitch;
+                }
+
+                if (SDL_MUSTLOCK(this->surface)) SDL_UnlockSurface(this->surface);
+                SDL_UnlockTexture(this->texture);
+            }
+        }
     }
 
     // NOTE: Do NOT reset render target here!
@@ -124,13 +169,27 @@ HRESULT SDL2Surface::Blt(RECT* destRect, LPDIRECTDRAWSURFACE7 src, RECT* srcRect
         SDL_SetRenderTarget(g_SDLRenderer, texture);
         SDL_SetRenderDrawColor(g_SDLRenderer, r, g, b, 255);
 
+        SDL_Rect sdlRect;
         if (destRect) {
-            SDL_Rect sdlRect = { destRect->left, destRect->top,
-                                destRect->right - destRect->left,
-                                destRect->bottom - destRect->top };
+            sdlRect = { destRect->left, destRect->top,
+                       destRect->right - destRect->left,
+                       destRect->bottom - destRect->top };
             SDL_RenderFillRect(g_SDLRenderer, &sdlRect);
         } else {
             SDL_RenderClear(g_SDLRenderer);
+            sdlRect = { 0, 0, (int)width, (int)height };
+        }
+
+        // CRITICAL FIX: Also update CPU surface after fill operation
+        // Create CPU surface if it doesn't exist
+        if (!surface) {
+            surface = SDL_CreateRGBSurface(0, width, height, 32,
+                                          0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+        }
+
+        if (surface) {
+            Uint32 fillColor = SDL_MapRGB(surface->format, r, g, b);
+            SDL_FillRect(surface, destRect ? &sdlRect : nullptr, fillColor);
         }
 
         SDL_SetRenderTarget(g_SDLRenderer, nullptr);
@@ -170,10 +229,60 @@ HRESULT SDL2Surface::Blt(RECT* destRect, LPDIRECTDRAWSURFACE7 src, RECT* srcRect
     // Set render target to this surface
     SDL_SetRenderTarget(g_SDLRenderer, texture);
 
-    // Perform the blit
+    // CRITICAL FIX: Dynamically switch blend mode based on color key flags
+    // DDBLT_KEYSRC/DDBLT_KEYSRCOVERRIDE enable transparency, absence disables it
+    // This prevents "ghosting" effect during screen transitions
+    if (srcSurface->colorKeyEnabled) {
+        bool useColorKey = (flags & DDBLT_KEYSRC) || (flags & DDBLT_KEYSRCOVERRIDE);
+        SDL_BlendMode mode = useColorKey ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE;
+        SDL_SetTextureBlendMode(srcSurface->texture, mode);
+    }
+
+    // Perform the GPU blit
     if (SDL_RenderCopy(g_SDLRenderer, srcSurface->texture, &sdlSrcRect, &sdlDestRect) != 0) {
         SDL_SetRenderTarget(g_SDLRenderer, nullptr);
         return DDERR_GENERIC;
+    }
+
+    // CRITICAL FIX: Also update CPU surface to keep it in sync with GPU
+    // This ensures GetDC sees the latest background when copying to DIB
+
+    // Create CPU surface if it doesn't exist
+    if (!surface) {
+        surface = SDL_CreateRGBSurface(0, width, height, 32,
+                                      0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    }
+
+    if (surface) {
+        if (srcSurface->surface) {
+            // Both surfaces have CPU data - fast path
+            SDL_BlitSurface(srcSurface->surface, &sdlSrcRect, surface, &sdlDestRect);
+        } else {
+            // Source has no CPU copy - read from GPU (slower fallback)
+            // We need to read the current texture back from GPU
+            SDL_SetRenderTarget(g_SDLRenderer, texture);
+
+            void* pixels = nullptr;
+            int pitch = 0;
+            if (SDL_LockTexture(texture, &sdlDestRect, &pixels, &pitch) == 0) {
+                // Copy GPU pixels to CPU surface
+                if (SDL_MUSTLOCK(surface)) SDL_LockSurface(surface);
+
+                Uint8* srcPixels = (Uint8*)pixels;
+                Uint8* dstPixels = (Uint8*)surface->pixels +
+                                   sdlDestRect.y * surface->pitch +
+                                   sdlDestRect.x * 4;
+
+                for (int row = 0; row < sdlDestRect.h; row++) {
+                    memcpy(dstPixels, srcPixels, sdlDestRect.w * 4);
+                    srcPixels += pitch;
+                    dstPixels += surface->pitch;
+                }
+
+                if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
+                SDL_UnlockTexture(texture);
+            }
+        }
     }
 
     SDL_SetRenderTarget(g_SDLRenderer, nullptr);
@@ -217,16 +326,139 @@ HRESULT SDL2Surface::Unlock(RECT* rect) {
     return DD_OK;
 }
 
-HRESULT SDL2Surface::GetDC(HDC* hdc) {
-    // HDC operations are not directly supported in SDL2
-    // This is a stub that returns a fake HDC
-    // The game will need to be modified if it relies on GDI drawing
-    *hdc = (HDC)0x12345678; // Fake HDC
+HRESULT SDL2Surface::GetDC(HDC* outHdc) {
+    if (!outHdc) return DDERR_GENERIC;
+    if (dcActive) {
+        // DC already in use - return existing one
+        *outHdc = this->hdc;
+        return DD_OK;
+    }
+
+    // Reuse existing DC/DIB or create new one
+    if (!this->hdc) {
+        // Create a DIB Section for GDI drawing
+        BITMAPINFO bmi = {};
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = width;
+        bmi.bmiHeader.biHeight = -height;  // Negative = top-down DIB
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;     // 32-bit BGRA
+        bmi.bmiHeader.biCompression = BI_RGB;
+
+        // Create memory DC
+        HDC screenDC = ::GetDC(nullptr);  // Win32 GetDC (not our method)
+        this->hdc = CreateCompatibleDC(screenDC);
+        ::ReleaseDC(nullptr, screenDC);   // Win32 ReleaseDC (not our method)
+
+        if (!this->hdc) {
+            fprintf(stderr, "[ERROR] GetDC: CreateCompatibleDC failed\n");
+            return DDERR_GENERIC;
+        }
+
+        // Create DIB Section
+        this->hBitmap = CreateDIBSection(this->hdc, &bmi, DIB_RGB_COLORS, &this->dibPixels, nullptr, 0);
+        if (!this->hBitmap) {
+            fprintf(stderr, "[ERROR] GetDC: CreateDIBSection failed\n");
+            DeleteDC(this->hdc);
+            this->hdc = nullptr;
+            return DDERR_GENERIC;
+        }
+
+        // Select bitmap into DC
+        SelectObject(this->hdc, this->hBitmap);
+    }
+
+    // CRITICAL FIX: Copy background from CPU surface to DIB
+    // This preserves the background while avoiding GPU stalls from RenderReadPixels
+    if (dibPixels) {
+        if (surface && surface->pixels) {
+            // Fast CPU->CPU copy from SDL_Surface to DIB
+            // Both are RGBA8888/BGRA32 format, so direct copy works
+            int pitch = width * 4;
+            if (surface->pitch == pitch) {
+                // Simple memcpy if pitch matches
+                memcpy(dibPixels, surface->pixels, height * pitch);
+            } else {
+                // Row-by-row copy if pitch differs
+                for (int y = 0; y < height; y++) {
+                    memcpy((uint8_t*)dibPixels + y * pitch,
+                           (uint8_t*)surface->pixels + y * surface->pitch,
+                           pitch);
+                }
+            }
+        } else {
+            // Fallback: clear to transparent if no CPU surface available
+            memset(dibPixels, 0, width * height * 4);
+        }
+    }
+
+    dcActive = true;
+    *outHdc = this->hdc;
     return DD_OK;
 }
 
-HRESULT SDL2Surface::ReleaseDC(HDC hdc) {
-    // Stub for HDC release
+HRESULT SDL2Surface::ReleaseDC(HDC hdcParam) {
+    if (!dcActive || hdcParam != this->hdc) {
+        return DDERR_GENERIC;
+    }
+
+    // CRITICAL FIX: Use cached streaming texture + render-copy for TARGET textures
+    // SDL_UpdateTexture FAILS on SDL_TEXTUREACCESS_TARGET textures
+    if (texture && dibPixels && g_SDLRenderer) {
+        // Create cached streaming texture on first use (reuse on subsequent calls)
+        if (!streamingTexture) {
+            streamingTexture = SDL_CreateTexture(g_SDLRenderer,
+                                                 SDL_PIXELFORMAT_BGRA32,
+                                                 SDL_TEXTUREACCESS_STREAMING,
+                                                 width, height);
+            if (!streamingTexture) {
+                fprintf(stderr, "[ERROR] ReleaseDC: Failed to create streaming texture: %s\n", SDL_GetError());
+                dcActive = false;
+                return DDERR_GENERIC;
+            }
+
+            // CRITICAL FIX: Set blend mode to NONE permanently
+            // This ensures transparent pixels fully overwrite old content (no blending artifacts)
+            SDL_SetTextureBlendMode(streamingTexture, SDL_BLENDMODE_NONE);
+        }
+
+        // Update streaming texture with DIB pixels (this works!)
+        int result = SDL_UpdateTexture(streamingTexture, nullptr, dibPixels, width * 4);
+        if (result == 0) {
+            // Set this texture as render target
+            SDL_Texture* previousTarget = SDL_GetRenderTarget(g_SDLRenderer);
+            if (SDL_SetRenderTarget(g_SDLRenderer, texture) == 0) {
+                // Copy streaming texture to our TARGET texture (full overwrite, no blending)
+                SDL_RenderCopy(g_SDLRenderer, streamingTexture, nullptr, nullptr);
+
+                // Restore previous render target
+                SDL_SetRenderTarget(g_SDLRenderer, previousTarget);
+            } else {
+                fprintf(stderr, "[ERROR] ReleaseDC: SDL_SetRenderTarget failed: %s\n", SDL_GetError());
+            }
+
+            // CRITICAL FIX: Also update CPU surface to keep it in sync
+            // This ensures future BltFast and GetDC operations see the latest content
+            if (surface && surface->pixels) {
+                int pitch = width * 4;
+                if (surface->pitch == pitch) {
+                    // Simple memcpy if pitch matches
+                    memcpy(surface->pixels, dibPixels, height * pitch);
+                } else {
+                    // Row-by-row copy if pitch differs
+                    for (int y = 0; y < height; y++) {
+                        memcpy((uint8_t*)surface->pixels + y * surface->pitch,
+                               (uint8_t*)dibPixels + y * pitch,
+                               pitch);
+                    }
+                }
+            }
+        } else {
+            fprintf(stderr, "[ERROR] ReleaseDC: SDL_UpdateTexture failed: %s\n", SDL_GetError());
+        }
+    }
+
+    dcActive = false;
     return DD_OK;
 }
 
@@ -248,46 +480,48 @@ HRESULT SDL2Surface::SetColorKey(DWORD flags, DDCOLORKEY* colorKey) {
         Uint8 keyG = (this->colorKey >> 8) & 0xFF;
         Uint8 keyB = this->colorKey & 0xFF;
 
-        // CRITICAL FIX: Implement proper color key by modifying alpha channel
-        // Read texture pixels, set alpha=0 for matching colors, alpha=255 for others
+        printf("[DEBUG] SetColorKey: RGB=(%d,%d,%d)\n", keyR, keyG, keyB);
 
-        int w, h;
-        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+        // CRITICAL FIX: Work with CPU surface directly using SDL pixel format functions
+        // This avoids ABGR/RGBA format confusion on Windows 11 software renderer
+        if (surface) {
+            // We have CPU surface - work with it directly using SDL format-aware functions
+            SDL_PixelFormat* format = surface->format;
 
-        // Allocate pixel buffer (RGBA8888 = 4 bytes per pixel)
-        Uint32* pixels = new Uint32[w * h];
+            SDL_LockSurface(surface);
 
-        // Set this texture as render target and read its pixels
-        SDL_SetRenderTarget(g_SDLRenderer, texture);
-        if (SDL_RenderReadPixels(g_SDLRenderer, nullptr, SDL_PIXELFORMAT_RGBA8888, pixels, w * 4) == 0) {
-            // Process each pixel: if RGB matches key, set alpha=0, else alpha=255
-            // CRITICAL: On little-endian (Windows), RGBA8888 as Uint32 = 0xAABBGGRR
-            // So we need to read bytes in correct order
-            Uint8* pixelBytes = (Uint8*)pixels;
+            Uint32* pixels = (Uint32*)surface->pixels;
+            int pitch_in_pixels = surface->pitch / 4;  // pitch is in bytes, we need pixels
 
-            for (int i = 0; i < w * h; i++) {
-                // Read RGBA bytes in memory order (little-endian safe)
-                Uint8 r = pixelBytes[i * 4 + 0];  // R is first byte
-                Uint8 g = pixelBytes[i * 4 + 1];  // G is second byte
-                Uint8 b = pixelBytes[i * 4 + 2];  // B is third byte
-                Uint8 a = pixelBytes[i * 4 + 3];  // A is fourth byte
+            // Process each pixel using SDL_GetRGBA to handle any pixel format correctly
+            for (int y = 0; y < surface->h; y++) {
+                for (int x = 0; x < surface->w; x++) {
+                    Uint32* pixel = &pixels[y * pitch_in_pixels + x];
 
-                // If pixel color matches key color, make it transparent
-                if (r == keyR && g == keyG && b == keyB) {
-                    pixelBytes[i * 4 + 3] = 0;    // Set alpha = 0 (transparent)
-                } else {
-                    pixelBytes[i * 4 + 3] = 255;  // Set alpha = 255 (opaque)
+                    // Read pixel color using SDL format-aware function
+                    Uint8 r, g, b, a;
+                    SDL_GetRGBA(*pixel, format, &r, &g, &b, &a);
+
+                    // If pixel matches color key, make transparent; otherwise opaque
+                    if (r == keyR && g == keyG && b == keyB) {
+                        a = 0;    // Transparent
+                    } else {
+                        a = 255;  // Opaque
+                    }
+
+                    // Write pixel back using SDL format-aware function
+                    *pixel = SDL_MapRGBA(format, r, g, b, a);
                 }
             }
 
+            SDL_UnlockSurface(surface);
+
             // Update texture with modified pixels
-            SDL_UpdateTexture(texture, nullptr, pixels, w * 4);
+            SDL_UpdateTexture(texture, nullptr, surface->pixels, surface->pitch);
+        } else {
+            // Fallback: no CPU surface available (shouldn't happen with new DDLoadBitmap)
+            printf("[WARNING] SetColorKey: No CPU surface available, color key may not work correctly\n");
         }
-
-        // Restore render target to screen
-        SDL_SetRenderTarget(g_SDLRenderer, nullptr);
-
-        delete[] pixels;
 
         // Enable alpha blending for transparency to work
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
@@ -753,22 +987,40 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
     SDL_GetWindowSize(window, &actualWidth, &actualHeight);
     printf("[DEBUG] Window size: requested=%dx%d, actual=%dx%d\n", width, height, actualWidth, actualHeight); fflush(stdout);
 
-    // Create renderer
-    // CRITICAL FIX: Use SOFTWARE renderer for maximum DirectDraw compatibility
-    // Hardware renderers may not support SDL_TEXTUREACCESS_TARGET on all drivers
-    // For 800x600 2D game from 2003, software rendering is more than fast enough
-    log = fopen("directdraw_init.log", "a");
-    if (log) {
-        fprintf(log, "[DEBUG] Creating SDL_Renderer with SOFTWARE mode...\n");
-        fflush(log);
-        fclose(log);
-    }
+    // Create renderer with ACCELERATED first, fallback to SOFTWARE
+    // Try ACCELERATED first for best performance, fallback to SOFTWARE if needed
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
     if (!renderer) {
         log = fopen("directdraw_init.log", "a");
         if (log) {
-            fprintf(log, "[ERROR] SDL_CreateRenderer FAILED: %s\n", SDL_GetError());
+            fprintf(log, "[WARNING] ACCELERATED renderer failed: %s\n", SDL_GetError());
+            fprintf(log, "[INFO] Trying ACCELERATED without VSYNC...\n");
+            fflush(log);
+            fclose(log);
+        }
+
+        // Try ACCELERATED without VSYNC
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    }
+
+    if (!renderer) {
+        log = fopen("directdraw_init.log", "a");
+        if (log) {
+            fprintf(log, "[WARNING] ACCELERATED renderer failed: %s\n", SDL_GetError());
+            fprintf(log, "[INFO] Falling back to SOFTWARE renderer...\n");
+            fflush(log);
+            fclose(log);
+        }
+
+        // Last resort - SOFTWARE mode
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    }
+
+    if (!renderer) {
+        log = fopen("directdraw_init.log", "a");
+        if (log) {
+            fprintf(log, "[ERROR] All renderer modes FAILED: %s\n", SDL_GetError());
             fflush(log);
             fclose(log);
         }
@@ -777,9 +1029,16 @@ HRESULT SDL2DirectDraw::Initialize(HWND hwnd, int width, int height, bool fullsc
         return DDERR_GENERIC;
     }
 
+    // Log which renderer mode we got
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(renderer, &info);
     log = fopen("directdraw_init.log", "a");
     if (log) {
-        fprintf(log, "[DEBUG] SDL_CreateRenderer SUCCESS (SOFTWARE mode)\n");
+        fprintf(log, "[SUCCESS] Renderer created: %s\n", info.name);
+        fprintf(log, "[INFO] Renderer flags: 0x%08X\n", info.flags);
+        if (info.flags & SDL_RENDERER_ACCELERATED) fprintf(log, "  - ACCELERATED (GPU)\n");
+        if (info.flags & SDL_RENDERER_SOFTWARE) fprintf(log, "  - SOFTWARE (CPU)\n");
+        if (info.flags & SDL_RENDERER_PRESENTVSYNC) fprintf(log, "  - VSYNC enabled\n");
         fflush(log);
         fclose(log);
     }
@@ -897,14 +1156,61 @@ IDirectDrawSurface7* DDLoadBitmap(IDirectDraw7* dd, LPCSTR bitmapPath, int width
         return nullptr;
     }
 
+    // CRITICAL FIX: Bitmap alias mapping for Shop and Settings resources
+    // Old staticchar.h identifiers -> actual file paths
+    static const std::unordered_map<std::string, std::string> kBitmapAliases = {
+        // Shop sections
+        {"ShopSection", "Shop/Sections/Section"},
+        {"ShopWeapons", "Shop/Sections/Weapons"},
+        {"ShopAmmo", "Shop/Sections/Ammo"},
+        {"ShopArmor", "Shop/Sections/Armor"},
+        {"ShopMisc", "Shop/Sections/Misc"},
+        {"ShopSpecial", "Shop/Sections/Special"},
+
+        // Shop left panels
+        {"LeftShopNormal", "Shop/Left/ShopNormal"},
+        {"LeftShopSelected", "Shop/Left/ShopSelected"},
+        {"LeftEnterStoreNormal", "Shop/Left/EnterStoreButtonNormal"},
+        {"LeftEnterStoreSelected", "Shop/Left/EnterStoreButtonSelected"},
+        {"LeftPlayerInfo", "Shop/Left/PlayerInfo"},
+
+        // Shop right panels
+        {"RightShopNormal", "Shop/Right/ShopNormal"},
+        {"RightShopSelected", "Shop/Right/ShopSelected"},
+        {"RightEnterStoreNormal", "Shop/Right/EnterStoreButtonNormal"},
+        {"RightEnterStoreSelected", "Shop/Right/EnterStoreButtonSelected"},
+        {"RightPlayerInfo", "Shop/Right/PlayerInfo"},
+
+        // Shop misc
+        {"ShopLookAwayLeft", "Shop/LOOKAWAYLEFT"},
+        {"ShopLookAwayRight", "Shop/LookAwayRight"},
+        {"StoreBottom", "Shop/StoreBottom"},
+        {"LeaveStoreNormal", "Shop/LeaveStoreNormal"},
+        {"LeaveStoreSelected", "Shop/LeaveStoreSelected"},
+
+        // Settings (case-insensitive match needed, but this helps)
+        {"SettingsBackground", "Settings"},
+        {"Settings", "Settings"}
+    };
+
     // Load surface from file
     // Try multiple paths: as-is, with .bmp, and in Bitmaps/ subdirectory
     SDL_Surface* loadedSurface = nullptr;
     std::string path(bitmapPath);
 
-    // 1. Try as-is first
-    LogBitmap("[DEBUG] Calling IMG_Load(%s)\n", bitmapPath);
-    loadedSurface = IMG_Load(bitmapPath);
+    // Check if this name has an alias
+    LogBitmap("[DEBUG] Checking for alias of '%s', map size=%d\n", path.c_str(), (int)kBitmapAliases.size());
+    auto aliasIt = kBitmapAliases.find(path);
+    if (aliasIt != kBitmapAliases.end()) {
+        LogBitmap("[DEBUG] Found alias mapping: %s -> %s\n", path.c_str(), aliasIt->second.c_str());
+        path = aliasIt->second;
+    } else {
+        LogBitmap("[DEBUG] No alias found for '%s'\n", path.c_str());
+    }
+
+    // 1. Try as-is first (use path, not bitmapPath, so aliases work!)
+    LogBitmap("[DEBUG] Calling IMG_Load(%s)\n", path.c_str());
+    loadedSurface = IMG_Load(path.c_str());
 
     // 2. Try with .bmp extension
     if (!loadedSurface && path.find('.') == std::string::npos) {
@@ -1007,11 +1313,13 @@ IDirectDrawSurface7* DDLoadBitmap(IDirectDraw7* dd, LPCSTR bitmapPath, int width
         return nullptr;
     }
 
-    SDL_FreeSurface(convertedSurface);
+    // CRITICAL FIX: Keep convertedSurface for SetColorKey to work with CPU pixels
+    // Don't free it here - SDL2Surface destructor will free it
+    LogBitmap("[DEBUG] Texture created, creating SDL2Surface wrapper (keeping CPU surface)\n");
 
-    LogBitmap("[DEBUG] Texture created, creating SDL2Surface wrapper\n");
     // Create surface wrapper
     SDL2Surface* result = new SDL2Surface(texture, w, h);
+    result->surface = convertedSurface;  // Store CPU surface for SetColorKey
     LogBitmap("[DEBUG] DDLoadBitmap() returning surface: %p\n", result);
     return result;
 }
@@ -1020,6 +1328,28 @@ HRESULT DDReLoadBitmap(IDirectDrawSurface7* surface, LPCSTR bitmapPath) {
     if (!surface || !bitmapPath || !g_SDLRenderer) return DDERR_GENERIC;
 
     SDL2Surface* sdlSurface = static_cast<SDL2Surface*>(surface);
+
+    // CRITICAL FIX: Release any active GDI resources before reloading
+    // If GetDC is active, we must release it to avoid stale DIB/DC pointers
+    if (sdlSurface->dcActive) {
+        // Force release of DC (this will flush any pending GDI operations)
+        if (sdlSurface->hdc) {
+            DeleteDC(sdlSurface->hdc);
+            sdlSurface->hdc = nullptr;
+        }
+        if (sdlSurface->hBitmap) {
+            DeleteObject(sdlSurface->hBitmap);
+            sdlSurface->hBitmap = nullptr;
+        }
+        sdlSurface->dibPixels = nullptr;
+        sdlSurface->dcActive = false;
+    }
+
+    // Also release streaming texture if exists (it's tied to old surface dimensions)
+    if (sdlSurface->streamingTexture) {
+        SDL_DestroyTexture(sdlSurface->streamingTexture);
+        sdlSurface->streamingTexture = nullptr;
+    }
 
     // Load new image
     SDL_Surface* loadedSurface = IMG_Load(bitmapPath);
@@ -1033,10 +1363,56 @@ HRESULT DDReLoadBitmap(IDirectDrawSurface7* surface, LPCSTR bitmapPath) {
 
     if (!loadedSurface) return DDERR_GENERIC;
 
-    // Update texture
-    SDL_UpdateTexture(sdlSurface->texture, nullptr,
-                     loadedSurface->pixels, loadedSurface->pitch);
-    SDL_FreeSurface(loadedSurface);
+    // CRITICAL FIX: Convert to RGBA8888 just like DDLoadBitmap
+    SDL_Surface* convertedSurface = loadedSurface;
+    if (loadedSurface->format->format != SDL_PIXELFORMAT_RGBA8888 &&
+        loadedSurface->format->format != SDL_PIXELFORMAT_ARGB8888) {
+        convertedSurface = SDL_ConvertSurfaceFormat(loadedSurface, SDL_PIXELFORMAT_RGBA8888, 0);
+        SDL_FreeSurface(loadedSurface);
+        if (!convertedSurface) return DDERR_GENERIC;
+    }
+
+    // CRITICAL FIX: Cannot use SDL_UpdateTexture on TARGET textures!
+    // Must use streaming texture + RenderCopy approach (same as ReleaseDC)
+
+    // Create temporary streaming texture
+    SDL_Texture* tempTexture = SDL_CreateTexture(g_SDLRenderer,
+                                                 SDL_PIXELFORMAT_RGBA8888,
+                                                 SDL_TEXTUREACCESS_STREAMING,
+                                                 convertedSurface->w, convertedSurface->h);
+    if (!tempTexture) {
+        SDL_FreeSurface(convertedSurface);
+        return DDERR_GENERIC;
+    }
+
+    // Update streaming texture with new pixels (this works!)
+    if (SDL_UpdateTexture(tempTexture, nullptr, convertedSurface->pixels, convertedSurface->pitch) != 0) {
+        SDL_DestroyTexture(tempTexture);
+        SDL_FreeSurface(convertedSurface);
+        return DDERR_GENERIC;
+    }
+
+    // Set blend mode to NONE for full overwrite
+    SDL_SetTextureBlendMode(tempTexture, SDL_BLENDMODE_NONE);
+
+    // Copy to TARGET texture via render-copy
+    SDL_Texture* previousTarget = SDL_GetRenderTarget(g_SDLRenderer);
+    if (SDL_SetRenderTarget(g_SDLRenderer, sdlSurface->texture) == 0) {
+        SDL_RenderCopy(g_SDLRenderer, tempTexture, nullptr, nullptr);
+        SDL_SetRenderTarget(g_SDLRenderer, previousTarget);
+    } else {
+        SDL_DestroyTexture(tempTexture);
+        SDL_FreeSurface(convertedSurface);
+        return DDERR_GENERIC;
+    }
+
+    SDL_DestroyTexture(tempTexture);
+
+    // CRITICAL FIX: Update CPU surface buffer for SetColorKey to work
+    if (sdlSurface->surface) {
+        SDL_FreeSurface(sdlSurface->surface);
+    }
+    sdlSurface->surface = convertedSurface;  // Store new CPU surface
 
     return DD_OK;
 }
